@@ -44,6 +44,7 @@
         <a-icon slot="icon" type="question-circle-o" style="color: red" />
         <a-button type="danger" ghost icon="close">清空</a-button>
       </a-popconfirm>
+      <a-button type="primary" icon="export" @click="exportExcel()">导出</a-button>
       <a-dropdown v-has="'monitor:operlog:remove'" v-if="selectedRowKeys.length > 0">
         <a-button type="danger" icon="delete" @click="delByIds(selectedRowKeys)">删除</a-button>
       </a-dropdown>
@@ -75,9 +76,11 @@
 
 <script>
 import { STable } from '@/components'
-import { getOperLogList, delOperLog, cleanOperLog } from '@/api/monitor'
+// import { getOperLogList, delOperLog, cleanOperLog, operLogExport } from '@/api/monitor'
+import { getOperLogList, operLogExport } from '@/api/monitor'
 import OperLogModal from './modules/OperLogModal.vue'
-import { getDictArray } from '../../utils/dict'
+import { getDictArray } from '@/utils/dict'
+import { exportExcel } from '@/utils/download'
 const operTypeMap = {}
 export default {
   name: 'TableList',
@@ -190,8 +193,6 @@ export default {
     onSelectChange (selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
-      console.log(this.selectedRowKeys)
-      console.log(this.selectedRows)
     },
     handleDetail (record) {
       this.$refs.modal.detail(record)
@@ -199,21 +200,26 @@ export default {
     handleOk () {
       this.$refs.table.refresh(true)
     },
+    exportExcel () {
+      exportExcel(operLogExport, this.queryParam)
+    },
     delByIds (ids) {
-      delOperLog({ ids: ids.join(',') }).then(res => {
-        if (res.code === 0) {
-          this.$message.success(`删除成功`)
-          this.handleOk()
-        } else {
-          this.$message.error(res.msg)
-        }
-        this.selectedRowKeys = []
-      })
+      this.$message.success(`你删除了` + ids)
+      // delOperLog({ ids: ids.join(',') }).then(res => {
+      //   if (res.code === 0) {
+      //     this.$message.success(`删除成功`)
+      //     this.handleOk()
+      //   } else {
+      //     this.$message.error(res.msg)
+      //   }
+      //   this.selectedRowKeys = []
+      // })
     },
     clean () {
-      cleanOperLog().then(res => {
-        this.handleOk()
-      })
+      this.$message.success(`你点击了清空`)
+      // cleanOperLog().then(res => {
+      //   this.handleOk()
+      // })
     }
   },
   watch: {

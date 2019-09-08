@@ -13,6 +13,7 @@ const constantRouterComponents = {
   // 你需要动态引入的页面组件
   analysis: () => import('@/views/dashboard/Analysis'),
   workplace: () => import('@/views/dashboard/Workplace'),
+  weclome: () => import('@/views/dashboard/Welcome'),
   monitor: () => import('@/views/dashboard/Monitor'),
   baseForm: () => import('@/views/form/BasicForm'),
   stepForm: () => import('@/views/form/stepForm/StepForm'),
@@ -49,7 +50,10 @@ const constantRouterComponents = {
   ossList: () => import('@/views/system/OssList'),
   // monitor
   operLogList: () => import('@/views/monitor/OperLogList'),
-  loginLogList: () => import('@/views/monitor/LoginLogList')
+  loginLogList: () => import('@/views/monitor/LoginLogList'),
+  // gen
+  genList: () => import('@/views/gen/GenList'),
+  genEdit: () => import('@/views/gen/GenEdit')
   // ...more
 }
 
@@ -110,11 +114,13 @@ export const generator = (routerMap, parent) => {
       path: `${parent && parent.path || ''}/${item.key}`,
       // 路由名称，建议唯一
       name: item.name || item.key || '',
+      // 隐藏菜单
+      hidden: item.hidden || false,
       // 该路由对应页面的 组件
       component: constantRouterComponents[item.component || item.key],
       hideChildrenInMenu: item.hideChildrenInMenu || false,
       // meta: 页面标题, 菜单图标, 页面权限(供指令权限用，可去掉)
-      meta: { title: item.title, icon: item.icon || undefined, permission: item.key && [ item.key ] || null, hiddenHeaderContent: item.hiddenHeaderContent || false }
+      meta: { title: item.title, icon: item.icon || undefined, hiddenHeaderContent: item.hiddenHeaderContent || false }
     }
     // 为了防止出现后端返回结果不规范，处理有可能出现拼接出两个 反斜杠
     currentRouter.path = currentRouter.path.replace('//', '/')
@@ -136,17 +142,22 @@ export function buildmenu (rows) {
       'key': '',
       'name': 'index',
       'component': 'BasicLayout',
-      'redirect': '/dashboard/workplace',
+      'redirect': '/dashboard/weclome',
       'children': [
         {
           'title': '仪表盘',
           'key': 'dashboard',
           'component': 'RouteView',
-          'redirect': '/dashboard/workplace',
+          'redirect': '/dashboard/weclome',
           'icon': 'dashboard',
           'children': [{
             'title': '分析页',
             'key': 'analysis',
+            'icon': ''
+          },
+          {
+            'title': '欢迎页',
+            'key': 'weclome',
             'icon': ''
           },
           {
@@ -222,7 +233,7 @@ export function buildmenu (rows) {
         {
           'title': '详情页',
           'key': 'profile',
-          'component': 'PageView',
+          'component': 'RouteView',
           'icon': 'profile',
           'children': [{
             'title': '基础详情页',
@@ -342,13 +353,14 @@ export function buildtree (list, arr, parentId) {
         title: item.menuName,
         key: item.menuKey,
         icon: item.icon,
-        component: 'PageView',
+        hidden: item.visible === '1',
+        component: item.menuType === 'M' ? item.menuLay : undefined,
         children: []
       }
       buildtree(list, child.children, item.menuId)
       if (child.children.length === 0) {
         delete child.children
-        delete child.component
+        // delete child.component
       }
       arr.push(child)
     }

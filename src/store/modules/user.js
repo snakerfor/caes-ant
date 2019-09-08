@@ -68,7 +68,8 @@ const user = {
           } else {
             reject(new Error('getInfo: roles must be a non-null array !'))
           }
-          commit('SET_NAME', { name: result.name, welcome: welcome() })
+          console.log(result)
+          commit('SET_NAME', { name: result.userName, welcome: welcome() })
           commit('SET_AVATAR', result.avatar || '/avatar2.jpg')
           resolve(response)
         }).catch(error => {
@@ -80,16 +81,15 @@ const user = {
     // 登出
     Logout ({ commit, state }) {
       return new Promise((resolve) => {
-        // 优化退出逻辑，先复制token，本地先执行退出
-        const token = state.token
-        commit('SET_TOKEN', '')
-        commit('SET_ROLES', [])
-        commit('SET_INFO', {})
-        Vue.ls.remove(ACCESS_TOKEN)
-        logout(token).then(() => {
+        logout(state.token).then(() => {
           resolve()
         }).catch(() => {
           resolve()
+        }).finally(() => {
+          commit('SET_TOKEN', '')
+          commit('SET_ROLES', [])
+          commit('SET_INFO', {})
+          Vue.ls.remove(ACCESS_TOKEN)
         })
       })
     }
