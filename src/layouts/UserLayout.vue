@@ -5,11 +5,11 @@
         <div class="header">
           <a href="/">
             <img src="~@/assets/logo.svg" class="logo" alt="logo">
-            <span class="title">RUOYI ANT</span>
+            <span class="title">学生综合能力测评系统</span>
           </a>
         </div>
         <div class="desc">
-          Ant Design 是西湖区最具影响力的 Web 设计规范
+          郑州旅游职业学院最强组合
         </div>
       </div>
 

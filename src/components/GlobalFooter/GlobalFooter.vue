@@ -12,7 +12,7 @@
         <a-icon type="github" />
       </a>
       <a href="https://gitee.com/zhangmrit/ruoyi-cloud">RuoYi Cloud</a>
-      <a href="https://gitee.com/zhangmrit/ruoyi-ant">RuoYi Ant</a>
+      <a href="https://gitee.com/zhangmrit/ruoyi-ant">能力测评系统</a>
     </div>
     <div class="copyright">
       Copyright

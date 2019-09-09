@@ -9,7 +9,8 @@ const api = {
   dictData: '/system/dict/data',
   dist: '/system/districts',
   config: '/system/config',
-  oss: '/system/oss'
+  oss: '/system/oss',
+  testlib: '/system/testLib'
 }
 
 export default api

@@ -53,7 +53,14 @@ const constantRouterComponents = {
   loginLogList: () => import('@/views/monitor/LoginLogList'),
   // gen
   genList: () => import('@/views/gen/GenList'),
-  genEdit: () => import('@/views/gen/GenEdit')
+  genEdit: () => import('@/views/gen/GenEdit'),
+  // major
+  test: () => import('@/views/major/Test'),
+  // ability
+  learnTest: () => import('@/views/ability/learnTest'),
+  knowledgeTest: () => import('@/views/ability/knowledgeTest'),
+  thinkingTest: () => import('@/views/ability/thinkingTest'),
+  skillTest: () => import('@/views/ability/skillTest')
   // ...more
 }
 

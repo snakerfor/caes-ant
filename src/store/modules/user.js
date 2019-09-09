@@ -65,6 +65,12 @@ const user = {
             commit('SET_BUTTONS', result.buttons)
             commit('SET_USERID', result.userId)
             commit('SET_INFO', result)
+            if (result.roleIds.includes(13)) { // 如果是学生，导航栏置顶 by snakerfor
+              commit('TOGGLE_LAYOUT_MODE', 'topmenu')
+              commit('TOGGLE_FIXED_SIDERBAR', false)
+            } else {
+              commit('TOGGLE_LAYOUT_MODE', 'sidemenu')
+            }
           } else {
             reject(new Error('getInfo: roles must be a non-null array !'))
           }
