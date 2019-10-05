@@ -38,16 +38,30 @@
 
       <a-divider dashed />
 
-      <a-card style="width: 100%">
+      <!--<a-card style="width: 100%" v-for="(rowId) in roleAll.rows" :key="rowId">
         <a-row>
-          <a-col :md="12">{{ question }}</a-col>
+          <a-col :md="12">1{{ rowId.quesContent }}</a-col>
           <a-col :md="12" class="answerMargin">
             <a-radio-group v-model="changeValue" @change="onChange">
               <a-radio v-for="(option, id) in answerOption" :value="id" :key="id">{{ option }}</a-radio>
             </a-radio-group>
           </a-col>
         </a-row>
-      </a-card>
+      </a-card>-->
+      <a-form :form="form">
+        <a-card style="width: 100%" v-for="(row, index) in roleAll" :key="row.quesId" v-show="roleIndex === index + 1">
+          <a-row>
+            <a-col :md="12">{{ row.quesContent }}</a-col>
+            <a-col :md="12" class="answerMargin">
+              <a-form-item>
+                <a-radio-group @change="onChange" v-decorator="[row.quesId]">
+                  <a-radio v-for="(option, id) in answerOption" :value="id" :key="id">{{ option }}</a-radio>
+                </a-radio-group>
+              </a-form-item>
+            </a-col>
+          </a-row>
+        </a-card>
+      </a-form>
     </a-card>
 
     <!-- 答题完成模态框 -->
@@ -65,6 +79,7 @@
 <script>
 // 导入接口函数
 import { getTestLibByTypeId } from '@/api/ques'
+import { test } from '@/api/system'
 // 引入业务组件
 import headInfo from '@/components/tools/HeadInfo'
 
@@ -88,23 +103,23 @@ export default {
       answersComplete: 0,
       // 页面描述
       description: '报考专业测评，请按自己的第一印象作答',
-      // 单选值暂存
-      changeValue: '',
       // 试题数据索引
       roleIndex: 0,
       // 试题数据源
       roleAll: [],
-      // 试题题干
-      question: '',
       // 答案选项
       answerOption: {
         0: '是',
         1: '否'
         // 2: '完全不符'
-      }
+      },
+      form: this.$form.createForm(this)
     }
 
     return pageData
+  },
+  mounted () {
+    window.vue = this
   },
   methods: {
     // 页面显示切换
@@ -137,22 +152,30 @@ export default {
     // 加载新试题
     newAnswer () {
       if (this.roleIndex < this.answersNumber) {
-        this.question = this.roleAll[this.roleIndex].testContent
         this.roleIndex = this.roleIndex + 1
       }
     },
     // 选中一个答案
-    onChange () {
+    onChange (e) {
       if (this.answersComplete < this.answersNumber) {
         this.newAnswer()
-        // 提交当前答案并清空选择项
-        this.changeValue = ''
         // 增加已完成试题计数
         this.answersComplete += 1
 
         // 判断是否完成所有试题
         if (this.answersComplete === this.answersNumber) {
-          alert('问卷填写完成')
+          this.form.validateFields((err, values) => {
+            if (!err) {
+              test(values).then(res => {
+                if (res.code === 0) {
+                  console.log('成功')
+                }
+              })
+              // console.log(values)
+            }
+            // console.log(err)
+          })
+
           // 显示答题完成模态框
           this.modalVisible = true
         }

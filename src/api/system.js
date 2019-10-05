@@ -312,3 +312,13 @@ export function saveOssConfig (parameter) {
     params: parameter
   })
 }
+export function test (parameter) {
+  return axios({
+    url: api.config + '/test',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
