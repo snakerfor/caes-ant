@@ -5,13 +5,13 @@
       <a-card :body-style="{padding: '24px 32px'}" :bordered="false">
         <a-row>
           <a-col :md="8">
-            <head-info title="试题类型" content="能力测评" :bordered="true"/>
+            <head-info title="试题类型" content="能力测评" :bordered="true" />
           </a-col>
           <a-col :md="8">
-            <head-info title="试题数量" :content="String(answersNumber)" :bordered="true"/>
+            <head-info title="试题数量" :content="String(answersNumber)" :bordered="true" />
           </a-col>
           <a-col :md="8">
-            <head-info title="预计用时" :content="answersNumber * 10 / 60 + '分钟'" :bordered="true"/>
+            <head-info title="预计用时" :content="answersNumber * 10 / 60 + '分钟'" :bordered="true" />
           </a-col>
         </a-row>
       </a-card>
@@ -30,23 +30,43 @@
     <!-- 测评试题 -->
     <a-card :body-style="{padding: '24px 32px'}" :bordered="false" v-if="testAnswerShow">
       <a-row>
-        <a-col :lg="2">完成：{{ answersComplete }}/{{ answersNumber }}</a-col>
+        <a-col :lg="2">完成：{{ roleIndex }}/{{ answersNumber }}</a-col>
         <a-col :lg="22">
-          <a-progress :percent="parseInt(answersComplete / answersNumber * 100)" :strokeWidth="12" />
+          <a-progress :percent="parseInt(roleIndex / answersNumber * 100)" :strokeWidth="12" />
         </a-col>
       </a-row>
 
       <a-divider dashed />
 
       <a-card style="width: 100%">
-        <a-row>
+        <!-- <a-row>
           <a-col :md="12">{{ question }}</a-col>
           <a-col :md="12" class="answerMargin">
             <a-radio-group v-model="changeValue" @change="onChange">
               <a-radio v-for="(option, id) in answerOption" :value="id" :key="id">{{ option }}</a-radio>
             </a-radio-group>
           </a-col>
-        </a-row>
+        </a-row>-->
+        <a-form @submit="handleSubmit" :form="form" :layout="vertical">
+          <a-form-item
+            v-for="(ques,index) in roleAll"
+            v-show="ques.quesOrder === roleIndex"
+            :label="ques.quesContent"
+            :key="index"
+            :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+            :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+            :colon="false"
+          ><br>
+            <a-radio-group v-decorator="[ques.quesId]" @change="onChange">
+              <a-radio :value="1">是</a-radio>
+              <a-radio :value="0">否</a-radio>
+            </a-radio-group>
+          </a-form-item>
+          <a-form-item :wrapperCol="{ span: 24 }" style="text-align: center" v-show="sumbitVisible">
+            <a-button htmlType="submit" type="primary">提交</a-button>
+            <a-button style="margin-left: 8px">保存</a-button>
+          </a-form-item>
+        </a-form>
       </a-card>
     </a-card>
 
@@ -56,7 +76,9 @@
         <a-button @click="gotoIndex">返回首页</a-button>
         <a-button type="primary" @click="gotoResult">查看测评结果</a-button>
       </template>
-      <p><a-alert message="测评已完成" type="success" /></p>
+      <p>
+        {{ result }}
+      </p>
       <p>选择回到测评首页或查看本次测评结果</p>
     </a-modal>
   </div>
@@ -65,6 +87,7 @@
 <script>
 // 导入接口函数
 import { getTestLibByTypeId } from '@/api/ques'
+import { saveTestSumbit } from '@/api/caes'
 // 引入业务组件
 import headInfo from '@/components/tools/HeadInfo'
 
@@ -79,6 +102,8 @@ export default {
       firstPageShow: false,
       // 测评试题
       testAnswerShow: false,
+      // 显示提交按钮
+      sumbitVisible: false,
       // 答题完成模态框
       modalVisible: false,
 
@@ -91,30 +116,28 @@ export default {
       // 单选值暂存
       changeValue: '',
       // 试题数据索引
-      roleIndex: 0,
+      roleIndex: 1,
       // 试题数据源
       roleAll: [],
       // 试题题干
       question: '',
-      // 答案选项
-      answerOption: {
-        0: '是',
-        1: '否'
-        // 2: '完全不符'
-      }
+      form: this.$form.createForm(this),
+      // 测结果
+      result: ''
     }
 
     return pageData
   },
   methods: {
     // 页面显示切换
-    pageSwitch (pageName) {
+
+    pageSwitch  (pageName) {
       switch (pageName) {
-        case 'firstPage' :
+        case 'firstPage':
           this.firstPageShow = true
           this.testAnswerShow = false
           break
-        case 'testAnswer' :
+        case 'testAnswer':
           this.firstPageShow = false
           this.testAnswerShow = true
           break
@@ -131,40 +154,56 @@ export default {
         this.roleAll = res.rows
         this.answersNumber = res.rows.length
         // 初次加载先显示试题
-        this.newAnswer()
+        // this.newAnswer()
       })
     },
     // 加载新试题
     newAnswer () {
       if (this.roleIndex < this.answersNumber) {
-        this.question = this.roleAll[this.roleIndex].testContent
+        this.question = this.roleAll[this.roleIndex].quesContent
         this.roleIndex = this.roleIndex + 1
       }
     },
     // 选中一个答案
     onChange () {
-      if (this.answersComplete < this.answersNumber) {
-        this.newAnswer()
-        // 提交当前答案并清空选择项
-        this.changeValue = ''
-        // 增加已完成试题计数
-        this.answersComplete += 1
-
-        // 判断是否完成所有试题
-        if (this.answersComplete === this.answersNumber) {
-          alert('问卷填写完成')
-          // 显示答题完成模态框
-          this.modalVisible = true
-        }
+      if (this.roleIndex === this.answersNumber) {
+        // 显示作答提交按钮
+        this.sumbitVisible = true
       }
+      this.roleIndex += 1
     },
     // 查看测评结果
-    gotoResult () {
-
-    },
+    gotoResult () {},
     // 返回测评首页
-    gotoIndex () {
-
+    gotoIndex () {},
+    // 提交作答
+    handleSubmit (e) {
+      e.preventDefault()
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values)
+          const data = []
+          for (var i in values) {
+            const sing = {}
+            sing.quesId = i
+            sing.answer = values[i]
+            data.push(sing)
+          }
+          this.confirmLoading = true
+          saveTestSumbit(data).then(res => {
+            if (res.code === 0) {
+              this.result = res.data
+              this.modalVisible = true
+            } else {
+              this.$message.success(res.msg)
+            }
+          }).catch(() => {
+            this.$message.error('系统错误，请稍后再试')
+          }).finally(() => {
+            this.confirmLoading = false
+          })
+        }
+      })
     }
   },
   created: function () {
