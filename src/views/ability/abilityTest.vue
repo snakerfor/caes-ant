@@ -48,7 +48,7 @@
             :labelCol="{lg: {span: 10}, sm: {span: 7}}"
             :wrapperCol="{lg: {span: 7}, sm: {span: 17} }"
             :colon="false"
-          >
+          ><br>
             <a-radio-group v-decorator="[ques.quesId]" @change="onChange">
               <a-radio :value="1">是</a-radio>
               <a-radio :value="0">否</a-radio>
@@ -57,8 +57,8 @@
           <a-form-item
             :colon="false"
             :label="sumbitTip"
-            :labelCol="{ span: 18}"
-            :wrapperCol="{ span: 6 }"
+            :labelCol="{ span: 10}"
+            :wrapperCol="{ span: 14 }"
             style="text-align: center"
             v-show="sumbitVisible"
           >
@@ -90,7 +90,7 @@
 <script>
 // 导入接口函数
 import { getTestLibByTypeId } from '@/api/ques'
-import { saveTestSumbit } from '@/api/caes'
+import { saveCreateSumbit } from '@/api/caes'
 import { Result } from '@/components'
 // 引入业务组件
 import headInfo from '@/components/tools/HeadInfo'
@@ -198,9 +198,10 @@ export default {
             data.push(sing)
           }
           this.confirmLoading = true
-          saveTestSumbit(data).then(res => {
+          saveCreateSumbit(data).then(res => {
             if (res.code === 0) {
-              this.result = '推荐报考专业：' + res.data
+              this.result = '您的创新创业能力成绩为：' + res.data.score +
+              ',' + res.data.result
               this.pageSwitch('resultShow')
             } else {
               this.$message.success(res.msg)
