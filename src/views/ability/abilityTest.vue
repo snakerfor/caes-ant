@@ -48,7 +48,7 @@
             :labelCol="{lg: {span: 10}, sm: {span: 7}}"
             :wrapperCol="{lg: {span: 7}, sm: {span: 17} }"
             :colon="false"
-          ><br>
+          >
             <a-radio-group v-decorator="[ques.quesId]" @change="onChange">
               <a-radio :value="1">是</a-radio>
               <a-radio :value="0">否</a-radio>
@@ -136,7 +136,6 @@ export default {
   },
   methods: {
     // 页面显示切换
-
     pageSwitch  (pageName) {
       switch (pageName) {
         case 'firstPage':
