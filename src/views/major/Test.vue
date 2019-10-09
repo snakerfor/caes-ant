@@ -11,7 +11,7 @@
             <head-info title="试题数量" :content="String(answersNumber)" :bordered="true" />
           </a-col>
           <a-col :md="8">
-            <head-info title="预计用时" :content="answersNumber * 10 / 60 + '分钟'" :bordered="true" />
+            <head-info title="预计用时" :content="parseInt(answersNumber * 10 / 60) + '分钟'" :bordered="true" />
           </a-col>
         </a-row>
       </a-card>
@@ -201,7 +201,7 @@ export default {
           this.confirmLoading = true
           saveTestSumbit(data).then(res => {
             if (res.code === 0) {
-              this.result = '推荐报考专业：' + res.data.major
+              this.result = '推荐报考专业：' + res.data
               this.pageSwitch('resultShow')
             } else {
               this.$message.success(res.msg)
