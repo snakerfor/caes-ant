@@ -5,13 +5,13 @@
       <a-card :body-style="{padding: '24px 32px'}" :bordered="false">
         <a-row>
           <a-col :md="8">
-            <head-info title="试题类型" content="能力测评" :bordered="true"/>
+            <head-info title="试题类型" content="能力测评" :bordered="true" />
           </a-col>
           <a-col :md="8">
-            <head-info title="试题数量" :content="String(answersNumber)" :bordered="true"/>
+            <head-info title="试题数量" :content="String(answersNumber)" :bordered="true" />
           </a-col>
           <a-col :md="8">
-            <head-info title="预计用时" :content="answersNumber * 10 / 60 + '分钟'" :bordered="true"/>
+            <head-info title="预计用时" :content="parseInt(answersNumber * 10 / 60) + '分钟'" :bordered="true" />
           </a-col>
         </a-row>
       </a-card>
@@ -30,47 +30,75 @@
     <!-- 测评试题 -->
     <a-card :body-style="{padding: '24px 32px'}" :bordered="false" v-if="testAnswerShow">
       <a-row>
-        <a-col :lg="2">完成：{{ answersComplete }}/{{ answersNumber }}</a-col>
+        <a-col :lg="2">完成：{{ roleIndex }}/{{ answersNumber }}</a-col>
         <a-col :lg="22">
-          <a-progress :percent="parseInt(answersComplete / answersNumber * 100)" :strokeWidth="12" />
+          <a-progress :percent="parseInt(roleIndex / answersNumber * 100)" :strokeWidth="12" />
         </a-col>
       </a-row>
 
       <a-divider dashed />
 
       <a-card style="width: 100%">
-        <a-row>
-          <a-col :md="12">{{ question }}</a-col>
-          <a-col :md="12" class="answerMargin">
-            <a-radio-group v-model="changeValue" @change="onChange">
-              <a-radio v-for="(option, id) in answerOption" :value="id" :key="id">{{ option }}</a-radio>
+        <a-form @submit="handleSubmit" :form="form">
+          <a-form-item
+            v-for="(ques,index) in roleAll"
+            v-show="ques.quesOrder === roleIndex"
+            :label="ques.quesContent"
+            :key="index"
+            :labelCol="{lg: {span: 10}, sm: {span: 7}}"
+            :wrapperCol="{lg: {span: 7}, sm: {span: 17} }"
+            :colon="false"
+          ><br>
+            <a-radio-group v-decorator="[ques.quesId]" @change="onChange">
+              <a-radio :value="1">是</a-radio>
+              <a-radio :value="0">否</a-radio>
             </a-radio-group>
-          </a-col>
-        </a-row>
+          </a-form-item>
+          <a-form-item
+            :colon="false"
+            :label="sumbitTip"
+            :labelCol="{ span: 18}"
+            :wrapperCol="{ span: 6 }"
+            style="text-align: center"
+            v-show="sumbitVisible"
+          >
+            <a-button htmlType="submit" type="primary">提交</a-button>
+          </a-form-item>
+        </a-form>
       </a-card>
     </a-card>
 
-    <!-- 答题完成模态框 -->
-    <a-modal title="已完成" v-model="modalVisible">
-      <template slot="footer">
-        <a-button @click="gotoIndex">返回首页</a-button>
-        <a-button type="primary" @click="gotoResult">查看测评结果</a-button>
-      </template>
-      <p><a-alert message="测评已完成" type="success" /></p>
-      <p>选择回到测评首页或查看本次测评结果</p>
-    </a-modal>
+    <a-card :body-style="{padding: '24px 32px'}" :bordered="false" v-if="false">
+      <a-row>
+        <a-col :lg="18">全部试题已经完成，确认提交吗？</a-col>
+        <a-col :lg="6" style="text-align: center">
+          <a-button type="primary" @click="handleSubmit">提交作答</a-button>
+        </a-col>
+      </a-row>
+    </a-card>
+
+    <a-card :bordered="false" style="margin: -24px -24px 0px;" v-if="modalVisible">
+      <result type="success" :description="result" :title="title">
+        <template slot="action">
+          <a-button type="primary" @click="backIndex">返回重新测评</a-button>
+        </template>
+      </result>
+    </a-card>
   </div>
 </template>
 
 <script>
 // 导入接口函数
 import { getTestLibByTypeId } from '@/api/ques'
+import { saveTestSumbit } from '@/api/caes'
+import { Result } from '@/components'
 // 引入业务组件
 import headInfo from '@/components/tools/HeadInfo'
 
 export default {
   components: {
-    headInfo
+    headInfo,
+    Result
   },
   data () {
     var pageData = {
@@ -79,44 +107,61 @@ export default {
       firstPageShow: false,
       // 测评试题
       testAnswerShow: false,
+      // 显示提交按钮
+      sumbitVisible: false,
       // 答题完成模态框
       modalVisible: false,
 
       // 题目总数
       answersNumber: 0,
-      // 已答题
-      answersComplete: 0,
       // 页面描述
-      description: '创新技能测试，请按自己的第一印象作答',
-      // 单选值暂存
-      changeValue: '',
+      description: '报考专业测评，请按自己的第一印象作答',
       // 试题数据索引
-      roleIndex: 0,
+      roleIndex: 1,
       // 试题数据源
       roleAll: [],
       // 试题题干
       question: '',
-      // 答案选项
-      answerOption: {
-        0: '完全符合',
-        1: '部分适合',
-        2: '完全不符'
-      }
+      form: this.$form.createForm(this),
+      // 测结果
+      result: '',
+      title: '提交成功',
+      sumbitTip: '全部试题已经完成，确认提交吗？'
     }
 
     return pageData
   },
+  mounted () {
+    window.vue = this
+  },
   methods: {
     // 页面显示切换
-    pageSwitch (pageName) {
+
+    pageSwitch  (pageName) {
       switch (pageName) {
-        case 'firstPage' :
+        case 'firstPage':
           this.firstPageShow = true
           this.testAnswerShow = false
+          this.sumbitVisible = false
+          this.modalVisible = false
           break
-        case 'testAnswer' :
+        case 'testAnswer':
           this.firstPageShow = false
           this.testAnswerShow = true
+          this.sumbitVisible = false
+          this.modalVisible = false
+          break
+        case 'sumbitAnswer':
+          this.firstPageShow = false
+          this.testAnswerShow = true
+          this.sumbitVisible = true
+          this.modalVisible = false
+          break
+        case 'resultShow':
+          this.firstPageShow = false
+          this.testAnswerShow = false
+          this.sumbitVisible = false
+          this.modalVisible = true
           break
       }
     },
@@ -130,46 +175,53 @@ export default {
         console.log(res)
         this.roleAll = res.rows
         this.answersNumber = res.rows.length
-        // 初次加载先显示试题
-        this.newAnswer()
       })
-    },
-    // 加载新试题
-    newAnswer () {
-      if (this.roleIndex < this.answersNumber) {
-        this.question = this.roleAll[this.roleIndex].testContent
-        this.roleIndex = this.roleIndex + 1
-      }
     },
     // 选中一个答案
     onChange () {
-      if (this.answersComplete < this.answersNumber) {
-        this.newAnswer()
-        // 提交当前答案并清空选择项
-        this.changeValue = ''
-        // 增加已完成试题计数
-        this.answersComplete += 1
-
-        // 判断是否完成所有试题
-        if (this.answersComplete === this.answersNumber) {
-          alert('问卷填写完成')
-          // 显示答题完成模态框
-          this.modalVisible = true
-        }
+      if (this.roleIndex === this.answersNumber) {
+        // 显示作答提交按钮
+        this.pageSwitch('sumbitAnswer')
       }
+      this.roleIndex += 1
     },
-    // 查看测评结果
-    gotoResult () {
-
+    // 提交作答
+    handleSubmit (e) {
+      e.preventDefault()
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values)
+          const data = []
+          for (var i in values) {
+            const sing = {}
+            sing.quesId = i
+            sing.answer = values[i]
+            data.push(sing)
+          }
+          this.confirmLoading = true
+          saveTestSumbit(data).then(res => {
+            if (res.code === 0) {
+              this.result = '推荐报考专业：' + res.data
+              this.pageSwitch('resultShow')
+            } else {
+              this.$message.success(res.msg)
+            }
+          }).catch(() => {
+            this.$message.error('系统错误，请稍后再试')
+          }).finally(() => {
+            this.confirmLoading = false
+          })
+        }
+      })
     },
-    // 返回测评首页
-    gotoIndex () {
-
+    backIndex () {
+      this.roleIndex = 1
+      this.pageSwitch('firstPage')
     }
   },
   created: function () {
     // 加载试题数据
-    this.loadRoleAll(1)
+    this.loadRoleAll(2)
     // 初始化页面显示
     this.pageSwitch('firstPage')
   }

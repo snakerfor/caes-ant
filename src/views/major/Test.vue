@@ -11,7 +11,7 @@
             <head-info title="试题数量" :content="String(answersNumber)" :bordered="true" />
           </a-col>
           <a-col :md="8">
-            <head-info title="预计用时" :content="answersNumber * 10 / 60 + '分钟'" :bordered="true" />
+            <head-info title="预计用时" :content="parseInt(answersNumber * 10 / 60) + '分钟'" :bordered="true" />
           </a-col>
         </a-row>
       </a-card>
@@ -116,8 +116,6 @@ export default {
       answersNumber: 0,
       // 页面描述
       description: '报考专业测评，请按自己的第一印象作答',
-      // 单选值暂存
-      changeValue: '',
       // 试题数据索引
       roleIndex: 1,
       // 试题数据源
@@ -132,6 +130,9 @@ export default {
     }
 
     return pageData
+  },
+  mounted () {
+    window.vue = this
   },
   methods: {
     // 页面显示切换
@@ -200,7 +201,7 @@ export default {
           this.confirmLoading = true
           saveTestSumbit(data).then(res => {
             if (res.code === 0) {
-              this.result = '推荐报考专业：' + res.data.major
+              this.result = '推荐报考专业：' + res.data
               this.pageSwitch('resultShow')
             } else {
               this.$message.success(res.msg)
