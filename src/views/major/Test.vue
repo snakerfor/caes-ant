@@ -57,8 +57,8 @@
           <a-form-item
             :colon="false"
             :label="sumbitTip"
-            :labelCol="{ span: 18}"
-            :wrapperCol="{ span: 6 }"
+            :labelCol="{ span: 10}"
+            :wrapperCol="{ span: 14 }"
             style="text-align: center"
             v-show="sumbitVisible"
           >
@@ -90,7 +90,7 @@
 <script>
 // 导入接口函数
 import { getTestLibByTypeId } from '@/api/ques'
-import { saveTestSumbit } from '@/api/caes'
+import { saveMajorSumbit } from '@/api/caes'
 import { Result } from '@/components'
 // 引入业务组件
 import headInfo from '@/components/tools/HeadInfo'
@@ -199,9 +199,10 @@ export default {
             data.push(sing)
           }
           this.confirmLoading = true
-          saveTestSumbit(data).then(res => {
+          saveMajorSumbit(data).then(res => {
             if (res.code === 0) {
-              this.result = '推荐报考专业：' + res.data
+              this.result = '根据霍兰德职业测评结果：' + res.data.holResult +
+                ',推荐报考专业：' + res.data.advMajors
               this.pageSwitch('resultShow')
             } else {
               this.$message.success(res.msg)

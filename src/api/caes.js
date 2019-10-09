@@ -22,10 +22,21 @@ export function getTestSumbitList (parameter) {
     }
   })
 } */
-// 保存试题作答
-export function saveTestSumbit (parameter) {
+// 保存试题作答(专业报考测评)
+export function saveMajorSumbit (parameter) {
   return axios({
-    url: api.testSumbit + '/save',
+    url: api.testSumbit + '/saveMajor',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+// 保存试题作答(创新创业测评)
+export function saveCreateSumbit (parameter) {
+  return axios({
+    url: api.testSumbit + '/saveCreate',
     method: 'post',
     data: parameter,
     headers: {
