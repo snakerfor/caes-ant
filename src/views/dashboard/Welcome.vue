@@ -2,18 +2,17 @@
   <page-view :avatar="avatar" :title="false">
     <div slot="headerContent">
       <div class="title">{{ timeFix }}，{{ user.userName }}<span class="welcome-text">，{{ welcome }}</span></div>
-      <div>前端工程师 | 蚂蚁金服 - 某某某事业群 - VUE平台</div>
     </div>
     <div slot="extra">
       <a-row class="more-info">
         <a-col :span="8">
-          <head-info :title="$t('dashboard.workplace.project')" content="56" :center="false" :bordered="false"/>
+          <head-info title="试题总量" content="56" :center="false" :bordered="false"/>
         </a-col>
         <a-col :span="8">
-          <head-info :title="$t('dashboard.workplace.teamRank')" content="8/24" :center="false" :bordered="false"/>
+          <head-info title="注册学生" content="2" :center="false" :bordered="false"/>
         </a-col>
         <a-col :span="8">
-          <head-info :title="$t('dashboard.workplace.views')" content="2,223" :center="false" />
+          <head-info title="注册教师" content="1" :center="false" />
         </a-col>
       </a-row>
     </div>
@@ -21,7 +20,7 @@
     <div>
       <a-row :gutter="24">
         <a-col :xl="16" :lg="24" :md="24" :sm="24" :xs="24">
-          <a-card :bordered="false" title="RuoYi Cloud">
+          <a-card :bordered="false" title="系统使用说明">
             <p><strong>Spring Cloud</strong> 版本的若依,集成 <strong>Spring Cloud</strong> 的几大神兽: <strong>eureka,gateway,hystrix,feign,config... </strong>自定义token实现授权，直接存到redis</p>
             <p><strong>文档地址 </strong><a href="http://doc.rycloud.zmrit.com" target="_blank">http://doc.rycloud.zmrit.com</a></p>
             <p><strong>RuoYi Cloud</strong> 承诺永久开源，不会出商业版之类的东西</p>
@@ -260,5 +259,8 @@ export default {
         }
       }
     }
+  }
+  .more-info {
+    margin-bottom: 10px;
   }
 </style>

@@ -17,12 +17,11 @@
 
       <div class="footer">
         <div class="links">
-          <a href="_self">帮助</a>
-          <a href="_self">隐私</a>
-          <a href="_self">条款</a>
+          <a href="http://www.zztrc.edu.cn/">郑州旅游职业学院</a>
+          <a href="/">学生综合能力测评系统</a>
         </div>
         <div class="copyright">
-          Copyright &copy; 2019 ruoyi
+          Copyright &copy; 2019 郑州旅游职业学院
         </div>
       </div>
     </div>

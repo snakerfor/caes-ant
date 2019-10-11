@@ -18,7 +18,7 @@ export default {
   props: {
     title: {
       type: String,
-      default: 'RUOYI ANT',
+      default: '学生能力测评系统',
       required: false
     },
     showTitle: {
