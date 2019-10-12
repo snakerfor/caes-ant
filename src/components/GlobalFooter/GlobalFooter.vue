@@ -2,21 +2,15 @@
   <div class="footer">
     <div class="links">
       <a
-        href="https://pro.loacg.com/"
+        href="http://www.zztrc.edu.cn/"
         target="_blank"
-      >Pro 首页</a>
-      <a
-        href="https://github.com/sendya/ant-design-pro-vue"
-        target="_blank"
-      >
-        <a-icon type="github" />
-      </a>
+      >郑州旅游职业学院</a>
+      <a href="/">学生能力测评系统</a>
       <a href="https://gitee.com/zhangmrit/ruoyi-cloud">RuoYi Cloud</a>
-      <a href="https://gitee.com/zhangmrit/ruoyi-ant">能力测评系统</a>
     </div>
     <div class="copyright">
       Copyright
-      <a-icon type="copyright" /> 2019 <span>RuoYi</span>
+      <a-icon type="copyright" /> 2019 <span>郑州旅游职业学院</span>
     </div>
   </div>
 </template>

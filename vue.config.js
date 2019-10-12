@@ -67,8 +67,26 @@ const vueConfig = {
         modifyVars: {
           // less vars，customize ant design theme
           // 'primary-color': '#F5222D',
-          // 'link-color': '#F5222D',
-          // 'border-radius-base': '4px'
+          // 'link-color': '#00FF00',
+          // 'border-radius-base': '4px',
+          // 'body-background': '#E6FFFB',RUOYI
+          // 'layout-body-background':'',// 页面背景色
+          'layout-header-background': '#002329', // 导航栏背景色
+          'menu-dark-submenu-bg': '#00474f', // 导航栏子菜单背景色
+          'layout-trigger-background': '#1890ff', // 导航栏标题背景色
+          'primary-color': '#13c2c2', // 全局主色
+          'link-color': '#13c2c2', // 链接色
+          'success-color': '#52c41a', // 成功色
+          'warning-color': '#faad14', // 警告色
+          'error-color': '#f5222d', // 错误色
+          'font-size-base': '14px', // 主字号
+          'heading-color': 'rgba(0, 0, 0, .85)', // 标题色
+          'text-color': 'rgba(0, 0, 0, .65)', // 主文本色
+          'text-color-secondary': 'rgba(0, 0, 0, .45)', // 次文本色
+          'disabled-color': 'rgba(0, 0, 0, .25)', // 失效色
+          'border-radius-base': '0', // 组件/浮层圆角
+          // 'border-color-base': '#00474f', // 边框色
+          'box-shadow-base': '0 2px 8px rgba(0, 0, 0, .15)' // 浮层阴影
         },
         javascriptEnabled: true
       }
@@ -81,7 +99,7 @@ const vueConfig = {
     proxy: {
       '/api': {
         // target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro',
-        //target: 'https://www.easy-mock.com/mock/5ce2743c2dda2d3b1365fb1b/ruoyi-cloud',
+        // target: 'https://www.easy-mock.com/mock/5ce2743c2dda2d3b1365fb1b/ruoyi-cloud',
         target: 'http://gateway.com:9527',
         pathRewrite: { '^/api': '' },
         ws: false,
