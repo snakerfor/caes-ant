@@ -30,9 +30,9 @@
     <!-- 测评试题 -->
     <a-card :body-style="{padding: '24px 32px'}" :bordered="false" v-if="testAnswerShow">
       <a-row>
-        <a-col :lg="2">完成：{{ roleIndex }}/{{ answersNumber }}</a-col>
+        <a-col :lg="2">完成：{{ roleIndex - 1 }}/{{ answersNumber }}</a-col>
         <a-col :lg="22">
-          <a-progress :percent="parseInt(roleIndex / answersNumber * 100)" :strokeWidth="12" />
+          <a-progress :percent="parseInt((roleIndex - 1) / answersNumber * 100)" :strokeWidth="12" />
         </a-col>
       </a-row>
 
@@ -40,49 +40,65 @@
 
       <a-card style="width: 100%">
         <a-form @submit="handleSubmit" :form="form">
-          <a-form-item
-            v-for="(ques,index) in roleAll"
-            v-show="ques.quesOrder === roleIndex"
-            :label="ques.quesContent"
-            :key="index"
-            :labelCol="{lg: {span: 10}, sm: {span: 7}}"
-            :wrapperCol="{lg: {span: 7}, sm: {span: 17} }"
-            :colon="false"
-          ><br>
-            <a-radio-group v-decorator="[ques.quesId]" @change="onChange">
-              <a-radio :value="1">是</a-radio>
-              <a-radio :value="0">否</a-radio>
-            </a-radio-group>
+          <a-form-item style="margin-bottom:0">
+            <a-row v-for="(ques, index) in roleAll" v-show="ques.quesOrder === roleIndex" :key="index">
+              <a-col :md="15">
+                <p style="margin-bottom:0">{{ ques.quesContent }}</p>
+              </a-col>
+              <a-col :md="9">
+                <a-radio-group v-decorator="[ques.quesId]" @change="onChange">
+                  <a-radio :value="1">是</a-radio>
+                  <a-radio :value="0">否</a-radio>
+                </a-radio-group>
+              </a-col>
+            </a-row>
           </a-form-item>
+
           <a-form-item
             :colon="false"
             :label="sumbitTip"
             :labelCol="{ span: 10}"
             :wrapperCol="{ span: 14 }"
             style="text-align: center"
-            v-show="sumbitVisible"
-          >
+            v-show="sumbitVisible">
             <a-button htmlType="submit" type="primary">提交</a-button>
           </a-form-item>
         </a-form>
       </a-card>
     </a-card>
 
-    <a-card :body-style="{padding: '24px 32px'}" :bordered="false" v-if="false">
-      <a-row>
-        <a-col :lg="18">全部试题已经完成，确认提交吗？</a-col>
-        <a-col :lg="6" style="text-align: center">
-          <a-button type="primary" @click="handleSubmit">提交作答</a-button>
-        </a-col>
-      </a-row>
-    </a-card>
-
-    <a-card :bordered="false" style="margin: -24px -24px 0px;" v-if="modalVisible">
-      <result type="success" :description="result" :title="title">
+    <!-- 测评报告 -->
+    <a-card :bordered="false" v-if="modalVisible">
+      <!--<result type="success" :description="result" :title="title">
         <template slot="action">
+
+          <radar :data="radarData" />
           <a-button type="primary" @click="backIndex">返回重新测评</a-button>
         </template>
-      </result>
+      </result>-->
+      <a-divider><h1 style="color:#7f7f7f">测评报告</h1></a-divider>
+      <a-row>
+        <a-col :md="15">
+          <detail-list title="职业兴趣特征">
+            <detail-list-item term="人格特征">IAS</detail-list-item>
+            <detail-list-item term="人格倾向排序">IRCSEA</detail-list-item>
+            <detail-list-item term="评测得分">{{ resultScore }}</detail-list-item>
+            <detail-list-item term="评价">{{ result }}</detail-list-item>
+          </detail-list>
+          <a-divider dashed />
+          <detail-list title="专业相关">
+            <detail-list-item term="专业倾向">科学型、艺术型、解释表达型</detail-list-item>
+            <detail-list-item term="推荐本校专业">游戏设计、计算机科学与技术</detail-list-item>
+            <detail-list-item term="就业方向">xxxxx</detail-list-item>
+          </detail-list>
+          <a-divider dashed />
+        </a-col>
+        <a-col :md="9">
+          <radar :data="radarData" />
+        </a-col>
+      </a-row>
+      <a-divider dashed />
+      <a-button type="primary" @click="backIndex" style="float:right">返回重新测评</a-button>
     </a-card>
   </div>
 </template>
@@ -91,13 +107,19 @@
 // 导入接口函数
 import { getTestLibByTypeId } from '@/api/ques'
 import { saveCreateSumbit } from '@/api/caes'
-import { Result } from '@/components'
 // 引入业务组件
+import { Result, Radar } from '@/components'
 import headInfo from '@/components/tools/HeadInfo'
+import DetailList from '@/components/tools/DetailList'
+const DataSet = require('@antv/data-set')
+const DetailListItem = DetailList.Item
 
 export default {
   components: {
     headInfo,
+    Radar,
+    DetailList,
+    DetailListItem,
     Result
   },
   data () {
@@ -112,21 +134,47 @@ export default {
       // 答题完成模态框
       modalVisible: false,
 
-      // 题目总数
-      answersNumber: 0,
       // 页面描述
       description: '报考专业测评，请按自己的第一印象作答',
+      // 题目总数
+      answersNumber: 0,
       // 试题数据索引
       roleIndex: 1,
       // 试题数据源
       roleAll: [],
-      // 试题题干
-      question: '',
       form: this.$form.createForm(this),
-      // 测结果
+      // 测评结果
+      resultScore: '',
       result: '',
-      title: '提交成功',
-      sumbitTip: '全部试题已经完成，确认提交吗？'
+
+      sumbitTip: '全部试题已经完成，确认提交吗？',
+      radar: [
+        {
+          'item': 'I(研究型)',
+          '指标': 70
+        },
+        {
+          'item': 'A(艺术型)',
+          '指标': 60
+        },
+        {
+          'item': 'S(社会型)',
+          '指标': 50
+        },
+        {
+          'item': 'E(企业型)',
+          '指标': 40
+        },
+        {
+          'item': 'C(传统型)',
+          '指标': 60
+        },
+        {
+          'item': 'R(现实型)',
+          '指标': 70
+        }
+      ],
+      radarData: ''
     }
 
     return pageData
@@ -178,11 +226,11 @@ export default {
     },
     // 选中一个答案
     onChange () {
-      if (this.roleIndex === this.answersNumber) {
+      this.roleIndex += 1
+      if (this.roleIndex - 1 === this.answersNumber) {
         // 显示作答提交按钮
         this.pageSwitch('sumbitAnswer')
       }
-      this.roleIndex += 1
     },
     // 提交作答
     handleSubmit (e) {
@@ -200,8 +248,10 @@ export default {
           this.confirmLoading = true
           saveCreateSumbit(data).then(res => {
             if (res.code === 0) {
-              this.result = '您的创新创业能力成绩为：' + res.data.score +
-              ',' + res.data.result
+              // this.result = '您的创新创业能力成绩为：' + res.data.score + ',' + res.data.result
+              this.resultScore = res.data.score
+              this.result = res.data.result
+              this.radarInit()
               this.pageSwitch('resultShow')
             } else {
               this.$message.success(res.msg)
@@ -217,11 +267,23 @@ export default {
     backIndex () {
       this.roleIndex = 1
       this.pageSwitch('firstPage')
+    },
+    // 雷达图初始化
+    radarInit () {
+      const dv = new DataSet.View().source(this.radar)
+      dv.transform({
+        type: 'fold',
+        fields: ['指标'],
+        key: 'user',
+        value: 'score'
+      })
+      this.radarData = dv.rows
     }
   },
   created: function () {
     // 加载试题数据
     this.loadRoleAll(2)
+    // this.radarInit()
     // 初始化页面显示
     this.pageSwitch('firstPage')
   }

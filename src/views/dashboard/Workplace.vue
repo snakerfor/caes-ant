@@ -231,6 +231,7 @@ export default {
 
       this.$http.get('/workplace/radar')
         .then(res => {
+          console.log(res)
           const dv = new DataSet.View().source(res.result)
           dv.transform({
             type: 'fold',

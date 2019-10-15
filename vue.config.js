@@ -71,11 +71,21 @@ const vueConfig = {
           // 'border-radius-base': '4px',
           // 'body-background': '#E6FFFB',RUOYI
           // 'layout-body-background':'',// 页面背景色
-          'layout-header-background': '#002329', // 导航栏背景色
-          'menu-dark-submenu-bg': '#00474f', // 导航栏子菜单背景色
-          'layout-trigger-background': '#1890ff', // 导航栏标题背景色
-          'primary-color': '#13c2c2', // 全局主色
-          'link-color': '#13c2c2', // 链接色
+
+          // 主题1 青色
+          // 'layout-header-background': '#002329', // 导航栏背景色
+          // 'menu-dark-submenu-bg': '#08474f', // 导航栏子菜单背景色
+          // 'border-radius-base': '0', // 组件/浮层圆角
+          // 'primary-color': '#13c2c2', // 全局主色
+          // 'link-color': '#13c2c2', // 链接色
+
+          // 主题2 郑旅蓝色
+          'layout-header-background': '#01478c', // 导航栏背景色
+          'menu-dark-submenu-bg': '#084c8d', // 导航栏子菜单背景色
+          'border-radius-base': '2.5px', // 组件/浮层圆角
+          'primary-color': '#03a9f4', // 全局主色
+          'link-color': '#03a9f4', // 链接色
+
           'success-color': '#52c41a', // 成功色
           'warning-color': '#faad14', // 警告色
           'error-color': '#f5222d', // 错误色
@@ -84,7 +94,6 @@ const vueConfig = {
           'text-color': 'rgba(0, 0, 0, .65)', // 主文本色
           'text-color-secondary': 'rgba(0, 0, 0, .45)', // 次文本色
           'disabled-color': 'rgba(0, 0, 0, .25)', // 失效色
-          'border-radius-base': '0', // 组件/浮层圆角
           // 'border-color-base': '#00474f', // 边框色
           'box-shadow-base': '0 2px 8px rgba(0, 0, 0, .15)' // 浮层阴影
         },
