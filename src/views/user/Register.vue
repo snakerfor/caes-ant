@@ -1,13 +1,22 @@
 <template>
   <div class="main user-layout-register">
-    <h3><span>注册</span></h3>
+    <h3><span>注册用戶</span></h3>
     <a-form ref="formRegister" :form="form" id="formRegister">
       <a-form-item>
         <a-input
           size="large"
           type="text"
-          placeholder="邮箱"
-          v-decorator="['email', {rules: [{ required: true, type: 'email', message: '请输入邮箱地址' }], validateTrigger: ['change', 'blur']}]"
+          placeholder="登錄名稱"
+          v-decorator="['loginName', {rules: [{ required: true, message: '請輸入登錄名稱' }], validateTrigger: ['change', 'blur']}]"
+        ></a-input>
+      </a-form-item>
+
+      <a-form-item>
+        <a-input
+          size="large"
+          type="text"
+          placeholder="用戶名稱"
+          v-decorator="['userName', {rules: [{ required: true, message: '請輸入用戶名稱' }], validateTrigger: ['change', 'blur']}]"
         ></a-input>
       </a-form-item>
 
@@ -48,13 +57,21 @@
       </a-form-item>
 
       <a-form-item>
+        <a-input
+          size="large"
+          type="text"
+          placeholder="邀请码"
+          v-decorator="['remark', {rules: [{ required: true, message: '请输入邀请码' }], validateTrigger: ['change', 'blur']}]"
+        ></a-input>
+      </a-form-item>
+      <!-- <a-form-item>
         <a-input size="large" placeholder="11 位手机号" v-decorator="['mobile', {rules: [{ required: true, message: '请输入正确的手机号', pattern: /^1[3456789]\d{9}$/ }, { validator: this.handlePhoneCheck } ], validateTrigger: ['change', 'blur'] }]">
           <a-select slot="addonBefore" size="large" defaultValue="+86">
             <a-select-option value="+86">+86</a-select-option>
             <a-select-option value="+87">+87</a-select-option>
           </a-select>
         </a-input>
-      </a-form-item>
+      </a-form-item> -->
       <!--<a-input-group size="large" compact>
             <a-select style="width: 20%" size="large" defaultValue="+86">
               <a-select-option value="+86">+86</a-select-option>
@@ -63,7 +80,7 @@
             <a-input style="width: 80%" size="large" placeholder="11 位手机号"></a-input>
           </a-input-group>-->
 
-      <a-row :gutter="16">
+      <!-- <a-row :gutter="16">
         <a-col class="gutter-row" :span="16">
           <a-form-item>
             <a-input size="large" type="text" placeholder="验证码" v-decorator="['captcha', {rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}]">
@@ -79,7 +96,7 @@
             @click.stop.prevent="getCaptcha"
             v-text="!state.smsSendBtn && '获取验证码'||(state.time+' s')"></a-button>
         </a-col>
-      </a-row>
+      </a-row> -->
 
       <a-form-item>
         <a-button
@@ -101,6 +118,7 @@
 <script>
 import { mixinDevice } from '@/utils/mixin.js'
 import { getSmsCaptcha } from '@/api/login'
+import { register } from '@/api/system'
 
 const levelNames = {
   0: '低',
@@ -183,6 +201,14 @@ export default {
       }
     },
 
+    loginNameCheck (rule, value, callback) {
+      // 判断用戶名
+      if (!/[0-9]/.test(value) || !/[a-zA-Z]/.test(value)) {
+        callback(new Error(''))
+      }
+      callback()
+    },
+
     handlePasswordCheck (rule, value, callback) {
       const password = this.form.getFieldValue('password')
       console.log('value', value)
@@ -216,7 +242,18 @@ export default {
       validateFields({ force: true }, (err, values) => {
         if (!err) {
           state.passwordLevelChecked = false
-          $router.push({ name: 'registerResult', params: { ...values } })
+          this.confirmLoading = true
+          register(values).then(res => {
+            if (res.code === 0) {
+              $router.push({ name: 'registerResult', params: { ...values } })
+            } else {
+              this.$message.success(res.msg)
+            }
+          }).catch(() => {
+            this.$message.error('系统错误，请稍后再试')
+          }).finally(() => {
+            this.confirmLoading = false
+          })
         }
       })
     },
@@ -229,7 +266,6 @@ export default {
         (err, values) => {
           if (!err) {
             state.smsSendBtn = true
-
             const interval = window.setInterval(() => {
               if (state.time-- <= 0) {
                 state.time = 60
