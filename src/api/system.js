@@ -54,6 +54,17 @@ export function resetPwd (parameter) {
   })
 }
 
+export function register (parameter) {
+  return axios({
+    url: api.user + '/register',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
 // role
 export function getRoleList (parameter) {
   return axios({
