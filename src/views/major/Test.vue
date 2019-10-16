@@ -80,14 +80,14 @@
       <a-row>
         <a-col :md="15">
           <detail-list title="职业兴趣特征">
-            <detail-list-item term="人格特征">{{ holResult }}</detail-list-item>
-            <detail-list-item term="人格倾向排序">{{ holSort }}</detail-list-item>
             <detail-list-item term="评测得分">111</detail-list-item>
             <detail-list-item term="评价">111</detail-list-item>
+            <detail-list-item term="人格特征">{{ holResult }}</detail-list-item>
+            <detail-list-item term="人格倾向排序">{{ holSort }}</detail-list-item>
           </detail-list>
           <a-divider dashed />
           <detail-list title="专业相关">
-            <detail-list-item term="专业倾向">科学型、艺术型、解释表达型</detail-list-item>
+            <detail-list-item term="专业倾向">{{ holType }}</detail-list-item>
             <detail-list-item term="推荐本校专业">{{ advMajors }}</detail-list-item>
             <detail-list-item term="就业方向">xxxxx</detail-list-item>
           </detail-list>
@@ -149,34 +149,10 @@ export default {
       holResult: '',
       holSort: '',
       advMajors: '',
+      holType: '',
 
       sumbitTip: '全部试题已经完成，确认提交吗？',
-      radar: [
-        {
-          'item': 'I(研究型)',
-          '指标': 70
-        },
-        {
-          'item': 'A(艺术型)',
-          '指标': 60
-        },
-        {
-          'item': 'S(社会型)',
-          '指标': 50
-        },
-        {
-          'item': 'E(企业型)',
-          '指标': 40
-        },
-        {
-          'item': 'C(传统型)',
-          '指标': 60
-        },
-        {
-          'item': 'R(现实型)',
-          '指标': 70
-        }
-      ],
+      // 雷达图数据
       radarData: ''
     }
 
@@ -255,8 +231,9 @@ export default {
               this.holResult = res.data.holResult
               this.holSort = res.data.holSort
               this.advMajors = res.data.advMajors
-
-              this.radarInit()
+              this.holType = this.holToChi(res.data.holResult)
+              // 格式化数据并展示雷达图
+              this.radarInit(res.data.holSort)
               this.pageSwitch('resultShow')
             } else {
               this.$message.success(res.msg)
@@ -273,9 +250,50 @@ export default {
       this.roleIndex = 1
       this.pageSwitch('firstPage')
     },
+    // 霍兰德类型匹配
+    hollandType (c) {
+      switch (c) {
+        case 'I':
+          return '研究型'
+        case 'A':
+          return '艺术型'
+        case 'S':
+          return '社会型'
+        case 'E':
+          return '企业型'
+        case 'C':
+          return '传统型'
+        case 'R':
+          return '现实型'
+        default:
+          return 'ERROR'
+      }
+    },
+    // 霍兰德类型转换中文解释
+    holToChi (holType) {
+      var holArr = holType.split('')
+      var resultStr = ''
+      for (var hol of holArr) {
+        resultStr += this.hollandType(hol) + '、'
+      }
+      return resultStr
+    },
     // 雷达图初始化
-    radarInit () {
-      const dv = new DataSet.View().source(this.radar)
+    radarInit (dataText) {
+      // 字符串数据转换为数组对象
+      var formatData = new Array(6)
+
+      var dataSet = dataText.split(',')
+      for (var i = 0; i < dataSet.length; i++) {
+        var res = dataSet[i].split('=')
+        var obj = {}
+
+        obj.item = res[0] + '（' + this.hollandType(res[0]) + '）'
+        obj.指标 = res[1]
+        formatData[i] = obj
+      }
+      // 数据格式化
+      const dv = new DataSet.View().source(formatData)
       dv.transform({
         type: 'fold',
         fields: ['指标'],

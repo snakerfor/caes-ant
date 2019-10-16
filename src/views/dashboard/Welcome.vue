@@ -21,9 +21,8 @@
       <a-row :gutter="24">
         <a-col :xl="16" :lg="24" :md="24" :sm="24" :xs="24">
           <a-card :bordered="false" title="系统使用说明">
-            <p><strong>Spring Cloud</strong> 版本的若依,集成 <strong>Spring Cloud</strong> 的几大神兽: <strong>eureka,gateway,hystrix,feign,config... </strong>自定义token实现授权，直接存到redis</p>
-            <p><strong>文档地址 </strong><a href="http://doc.rycloud.zmrit.com" target="_blank">http://doc.rycloud.zmrit.com</a></p>
-            <p><strong>RuoYi Cloud</strong> 承诺永久开源，不会出商业版之类的东西</p>
+            <b>学生能力测评系统使用方式：</b><br>
+
           </a-card>
 
           <a-card title="更新日志" :bordered="false">
