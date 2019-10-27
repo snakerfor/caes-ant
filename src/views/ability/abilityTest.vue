@@ -76,27 +76,21 @@
           <a-button type="primary" @click="backIndex">返回重新测评</a-button>
         </template>
       </result>-->
+      <!-- 用户反馈 -->
+      <div class="userReport">
+        <span>对本次测评满意吗？请打个分吧！</span>
+        <a-rate v-model="star" />
+      </div>
       <a-divider><h1 style="color:#7f7f7f">测评报告</h1></a-divider>
-      <a-row>
-        <a-col :md="15">
-          <detail-list title="职业兴趣特征">
-            <detail-list-item term="人格特征">IAS</detail-list-item>
-            <detail-list-item term="人格倾向排序">IRCSEA</detail-list-item>
-            <detail-list-item term="评测得分">{{ resultScore }}</detail-list-item>
-            <detail-list-item term="评价">{{ result }}</detail-list-item>
-          </detail-list>
-          <a-divider dashed />
-          <detail-list title="专业相关">
-            <detail-list-item term="专业倾向">科学型、艺术型、解释表达型</detail-list-item>
-            <detail-list-item term="推荐本校专业">游戏设计、计算机科学与技术</detail-list-item>
-            <detail-list-item term="就业方向">xxxxx</detail-list-item>
-          </detail-list>
-          <a-divider dashed />
-        </a-col>
-        <a-col :md="9">
-          <radar :data="radarData" />
-        </a-col>
-      </a-row>
+
+      <detail-list title="创新创业能力测评结果">
+        <detail-list-item term="评测得分">{{ resultScore }}</detail-list-item>
+        <detail-list-item term="评价">{{ result }}</detail-list-item>
+        <detail-list-item term="校内学生创业能力排名">第 1 名，共233名学生参加过评测</detail-list-item>
+        <!--（根据最近一次报考专业测评结果推荐与专业相关的创业方向）-->
+        <detail-list-item term="创业方向推荐">建筑设计、城市照明设计</detail-list-item>
+      </detail-list>
+
       <a-divider dashed />
       <a-button type="primary" @click="backIndex" style="float:right">返回重新测评</a-button>
     </a-card>
@@ -108,16 +102,14 @@
 import { getTestLibByTypeId } from '@/api/ques'
 import { saveCreateSumbit } from '@/api/caes'
 // 引入业务组件
-import { Result, Radar } from '@/components'
+import Result from '@/components/Result'
 import headInfo from '@/components/tools/HeadInfo'
 import DetailList from '@/components/tools/DetailList'
-const DataSet = require('@antv/data-set')
 const DetailListItem = DetailList.Item
 
 export default {
   components: {
     headInfo,
-    Radar,
     DetailList,
     DetailListItem,
     Result
@@ -148,39 +140,11 @@ export default {
       result: '',
 
       sumbitTip: '全部试题已经完成，确认提交吗？',
-      radar: [
-        {
-          'item': 'I(研究型)',
-          '指标': 70
-        },
-        {
-          'item': 'A(艺术型)',
-          '指标': 60
-        },
-        {
-          'item': 'S(社会型)',
-          '指标': 50
-        },
-        {
-          'item': 'E(企业型)',
-          '指标': 40
-        },
-        {
-          'item': 'C(传统型)',
-          '指标': 60
-        },
-        {
-          'item': 'R(现实型)',
-          '指标': 70
-        }
-      ],
-      radarData: ''
+      // 用户评价
+      star: 0
     }
 
     return pageData
-  },
-  mounted () {
-    window.vue = this
   },
   methods: {
     // 页面显示切换
@@ -219,7 +183,7 @@ export default {
     // 加载所有试题数据
     loadRoleAll (e) {
       getTestLibByTypeId(e).then(res => {
-        console.log(res)
+        // console.log(res)
         this.roleAll = res.rows
         this.answersNumber = res.rows.length
       })
@@ -251,7 +215,6 @@ export default {
               // this.result = '您的创新创业能力成绩为：' + res.data.score + ',' + res.data.result
               this.resultScore = res.data.score
               this.result = res.data.result
-              this.radarInit()
               this.pageSwitch('resultShow')
             } else {
               this.$message.success(res.msg)
@@ -267,23 +230,11 @@ export default {
     backIndex () {
       this.roleIndex = 1
       this.pageSwitch('firstPage')
-    },
-    // 雷达图初始化
-    radarInit () {
-      const dv = new DataSet.View().source(this.radar)
-      dv.transform({
-        type: 'fold',
-        fields: ['指标'],
-        key: 'user',
-        value: 'score'
-      })
-      this.radarData = dv.rows
     }
   },
   created: function () {
     // 加载试题数据
     this.loadRoleAll(2)
-    // this.radarInit()
     // 初始化页面显示
     this.pageSwitch('firstPage')
   }
@@ -295,6 +246,19 @@ export default {
 @media only screen and (max-width: 768px) {
   .answerMargin {
     margin-top: 0.5em;
+  }
+}
+
+/* 用户反馈 */
+.userReport {
+  width: 100%;
+  text-align: right;
+  font-size: 13px;
+}
+
+@media only screen and (max-width: 576px) {
+  .userReport span {
+    display: block;
   }
 }
 </style>
