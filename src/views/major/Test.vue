@@ -293,6 +293,9 @@ export default {
       var formatData = new Array(6)
 
       var dataSet = dataText.split(',')
+      // 去除最后一个空对象
+      dataSet.pop()
+
       for (var i = 0; i < dataSet.length; i++) {
         var res = dataSet[i].split('=')
         var obj = {}
