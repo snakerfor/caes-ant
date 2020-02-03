@@ -57,7 +57,9 @@ const constantRouterComponents = {
   // major
   test: () => import('@/views/major/Test'),
   // ability
-  abilityTest: () => import('@/views/ability/abilityTest')
+  abilityTest: () => import('@/views/ability/abilityTest'),
+  // competition
+  apply: () => import('@/views/competition/Apply')
   // ...more
 }
 
