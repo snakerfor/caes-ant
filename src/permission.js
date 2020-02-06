@@ -9,11 +9,15 @@ import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['login', 'register', 'registerResult'] // no redirect whitelist
+const whiteList = ['login', 'register', 'registerResult', '_index', 'news'] // no redirect whitelist
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
-
+  console.log(to)
+  // 访问根时无论登录与否都跳转到/index
+  // if (to.path === '/') {
+  //  next({ path: '/index' })
+  // } else
   if (Vue.ls.get(ACCESS_TOKEN)) {
     /* has token */
     if (to.path === '/user/login') {
@@ -51,6 +55,7 @@ router.beforeEach((to, from, next) => {
       }
     }
   } else {
+    // 未登录状态
     if (whiteList.includes(to.name)) {
       // 在免登录白名单，直接进入
       next()

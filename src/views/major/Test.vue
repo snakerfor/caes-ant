@@ -76,6 +76,12 @@
           <a-button type="primary" @click="backIndex">返回重新测评</a-button>
         </template>
       </result>-->
+      <!-- 用户反馈 -->
+      <div class="userReport">
+        <span>对本次测评满意吗？请打个分吧！</span>
+        <a-rate v-model="star" />
+      </div>
+
       <a-divider><h1 style="color:#7f7f7f">测评报告</h1></a-divider>
       <a-row>
         <a-col :md="15">
@@ -153,7 +159,10 @@ export default {
 
       sumbitTip: '全部试题已经完成，确认提交吗？',
       // 雷达图数据
-      radarData: ''
+      radarData: '',
+
+      // 用户评价
+      star: 0
     }
 
     return pageData
@@ -284,6 +293,9 @@ export default {
       var formatData = new Array(6)
 
       var dataSet = dataText.split(',')
+      // 去除最后一个空对象
+      dataSet.pop()
+
       for (var i = 0; i < dataSet.length; i++) {
         var res = dataSet[i].split('=')
         var obj = {}
@@ -317,6 +329,19 @@ export default {
 @media only screen and (max-width: 768px) {
   .answerMargin {
     margin-top: 0.5em;
+  }
+}
+
+/* 用户反馈 */
+.userReport {
+  width: 100%;
+  text-align: right;
+  font-size: 13px;
+}
+
+@media only screen and (max-width: 576px) {
+  .userReport span {
+    display: block;
   }
 }
 </style>
