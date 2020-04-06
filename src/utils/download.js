@@ -1,10 +1,14 @@
 import { pureAxios, axios } from '@/utils/request'
 
-const downloadUrl = '/system/common/download'
+const downloadUrl = [
+  '/system/common/download',
+  '/system/file'
+]
 
 const mimeMap = {
   xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  zip: 'application/zip'
+  zip: 'application/zip',
+  octetStream: 'application/octet-stream'
 }
 
 export function exportExcel (url, params) {
@@ -25,7 +29,7 @@ export function exportExcel (url, params) {
  */
 export function downloadXlsx (filename) {
   pureAxios({
-    url: downloadUrl,
+    url: downloadUrl[0],
     method: 'get',
     params: { fileName: filename, delete: true },
     responseType: 'blob'
@@ -63,8 +67,25 @@ export function resolveBlob (res, mimeType) {
   var result = patt.exec(contentDisposition)
   var fileName = result[1]
   aLink.href = URL.createObjectURL(blob)
-  aLink.setAttribute('download', fileName) // 设置下载文件名称
+  // 文件名过滤掉双引号并设置下载文件名
+  aLink.setAttribute('download', fileName.replace(/"/g, '')) // 设置下载文件名称
   document.body.appendChild(aLink)
   aLink.click()
   document.body.appendChild(aLink)
+}
+
+// 上传文件下载
+export function downloadFile (fileId) {
+  var parameter = {
+    fileId: fileId
+  }
+  return pureAxios({
+    url: downloadUrl[1] + '/download',
+    method: 'get',
+    params: parameter,
+    responseType: 'blob'
+  }).then(res => {
+    // blob下载
+    resolveBlob(res, mimeMap.octetStream)
+  })
 }

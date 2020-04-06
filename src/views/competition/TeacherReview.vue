@@ -95,6 +95,16 @@
 
     <!-- 作品审批模态框 -->
     <a-modal :title="'作品审批：' + reviewModelTitle" :visible="reviewModelVisible" :confirmLoading="reviewModelConfirmLoading" @ok="reviewSubmit" @cancel="reviewModelHandleCancel">
+      <a-card class="dataCard" title="作品信息">
+        <p>作品名称：{{ reviewModelData.name }}</p>
+        <p>作品领域：{{ reviewModelData.domain }}</p>
+        <p>作品介绍：{{ reviewModelData.desc }}</p>
+        <p>作品负责人：{{ reviewModelData.leader }}</p>
+        <p>作品团队：{{ reviewModelData.team }}</p>
+        <p>团队描述：{{ reviewModelData.teamDesc }}</p>
+        <p>目前阶段描述：{{ reviewModelData.currentDesc }}</p>
+        <p>未来达成描述：{{ reviewModelData.futureDesc }}</p>
+      </a-card>
       <!-- form2 作品评价表单 -->
       <a-form :form="form2">
         <a-form-item v-show="false">
@@ -218,6 +228,7 @@ export default {
       form: this.$form.createForm(this),
       form2: this.$form.createForm(this),
       // reviewModel
+      reviewModelData: [],
       reviewModelTitle: 0,
       reviewModelVisible: false,
       reviewModelConfirmLoading: false
@@ -275,6 +286,7 @@ export default {
     // 显示作品审核模态框
     showReviewModel (record, index) {
       this.reviewModelTitle = record.productionId + '[' + index + ']'
+      this.reviewModelData = record
       this.reviewModelVisible = true
       // 异步 确保模态框及表单完全显示
       this.$nextTick(() => {
@@ -303,6 +315,7 @@ export default {
       this.form.resetFields()
       // 清空提交参数searchValue
       this.searchValue = []
+      this.getListData(this.searchValue, this.paginationPageNumber, this.paginationPageSize)
     }
   },
   created: function () {
@@ -334,5 +347,18 @@ export default {
 .paginationStyle div {
   box-sizing: border-box;
   line-height: 30px;
+}
+
+.dataCard p {
+  margin-bottom: 0px;
+}
+
+.dataCard .ant-card-head-title {
+  padding:8px 0;
+  font-size:14px;
+}
+
+.dataCard .ant-card-head {
+  min-height: 20px;
 }
 </style>
