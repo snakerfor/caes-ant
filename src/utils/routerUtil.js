@@ -61,7 +61,8 @@ const constantRouterComponents = {
   abilityTest: () => import('@/views/ability/abilityTest'),
   // competition
   apply: () => import('@/views/competition/Apply'),
-  teacherReview: () => import('@/views/competition/TeacherReview')
+  teacherReview: () => import('@/views/competition/TeacherReview'),
+  essayEditor: () => import('@/views/competition/EssayEditor')
   // ...more
 }
 
