@@ -9,7 +9,8 @@ const api = {
   dictData: '/system/dict/data',
   dist: '/system/districts',
   config: '/system/config',
-  oss: '/system/oss'
+  oss: '/system/oss',
+  file: '/system/file'
 }
 
 export default api
@@ -321,5 +322,54 @@ export function saveOssConfig (parameter) {
     url: api.oss + '/saveConfig',
     method: 'post',
     params: parameter
+  })
+}
+
+// 文件上传下载相关功能
+
+// 文件列表
+export function getFileList (parameter, pageNumParam, pageSizeParam) {
+  // 分页参数
+  var paginationParam = {
+    pageNum: pageNumParam,
+    pageSize: pageSizeParam
+  }
+
+  return axios({
+    url: api.file + '/list',
+    method: 'get',
+    // params:合并分页参数与模糊查找参数
+    params: Object.assign(paginationParam, parameter)
+  })
+}
+// 修改文件信息
+export function updateFileInfo (parameter) {
+  return axios({
+    url: api.file + '/update',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+// 删除文件
+export function deleteFile (parameter) {
+  return axios({
+    url: api.file + '/delete',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+// 文件上传
+export function uploadFile (parameter) {
+  return axios({
+    url: api.file + '/upload',
+    method: 'post',
+    data: parameter
   })
 }

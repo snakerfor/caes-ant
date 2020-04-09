@@ -48,6 +48,7 @@ const constantRouterComponents = {
   distList: () => import('@/views/system/DistList'),
   configList: () => import('@/views/system/ConfigList'),
   ossList: () => import('@/views/system/OssList'),
+  fileList: () => import('@/views/system/FileList'),
   // monitor
   operLogList: () => import('@/views/monitor/OperLogList'),
   loginLogList: () => import('@/views/monitor/LoginLogList'),
@@ -60,7 +61,8 @@ const constantRouterComponents = {
   abilityTest: () => import('@/views/ability/abilityTest'),
   // competition
   apply: () => import('@/views/competition/Apply'),
-  teacherReview: () => import('@/views/competition/TeacherReview')
+  teacherReview: () => import('@/views/competition/TeacherReview'),
+  essayEditor: () => import('@/views/competition/EssayEditor')
   // ...more
 }
 
