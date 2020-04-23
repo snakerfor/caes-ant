@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="homeLayout">
     <div class="smallBar">欢迎进入郑州旅游职业学院创新创业服务网</div>
     <div class="titleBar">
       <div class="barContent">
@@ -9,22 +9,24 @@
           <div class="loginLink">
             <a href="/user/login">学生登录</a>
             <a-divider type="vertical" />
-            <a href="/user/register">老师登录</a>
-            <a-divider type="vertical" />
-            <a href="#">用人单位登录</a>
+            <a href="/user/login">老师登录</a>
           </div>
         </div>
       </div>
     </div>
     <a-layout>
-      <a-layout-header style="height:46px">
-        <a-menu theme="dark" v-model="menuCurrent" mode="horizontal">
-          <a-menu-item key="s:a">首页</a-menu-item>
-          <a-menu-item key="s:2">就业日历</a-menu-item>
+      <a-layout-header style="height:46px;padding:0px;">
+        <a-menu style="width:85%;margin:auto" theme="dark" v-model="menuCurrent" mode="horizontal">
+          <a-menu-item key="s:a">
+            <a href="/index">首页</a>
+          </a-menu-item>
+          <a-menu-item key="s:2">
+            </a>中心概况</a>
+          </a-menu-item>
           <a-sub-menu>
             <span slot="title">就业指导</span>
             <a-menu-item-group title="Item 1">
-              <a-menu-item key="s:3">就业流程</a-menu-item>
+              <a-menu-item key="s:3"><a href="/major/test">专业测评</a></a-menu-item>
               <a-menu-item key="s:4">职业规划</a-menu-item>
             </a-menu-item-group>
             <a-menu-item-group title="Item 2">
@@ -43,11 +45,9 @@
       </a-layout-header>
       <a-layout-content>
         <swiper style="height:300px" :options="swiperOption">
-          <swiper-slide style="background-color:#CC99090">Slide 1</swiper-slide>
-          <swiper-slide style="background-color:#FFC0CB">Slide 2</swiper-slide>
-          <swiper-slide style="background-color:#CC3300">Slide 3</swiper-slide>
-          <swiper-slide style="background-color:#595959">Slide 4</swiper-slide>
-          <swiper-slide style="background-color:#FFFFCC">Slide 5</swiper-slide>
+          <swiper-slide style=""><img style="width:100%" src="../../assets/1.jpg"></swiper-slide>
+          <swiper-slide style=""><img style="width:100%" src="../../assets/2.jpg"></swiper-slide>
+          <swiper-slide style=""><img style="width:100%" src="../../assets/3.png"></swiper-slide>
           <div class="swiper-pagination" slot="pagination"></div>
           <div class="swiper-button-prev" slot="button-prev"></div>
           <div class="swiper-button-next" slot="button-next"></div>
@@ -177,7 +177,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .smallBar {
   background-color:#f0f2f5;
   width: 100%;
@@ -188,14 +188,15 @@ export default {
 
 .titleBar {
   width: 100%;
-  height: 120px;
+  height: 80px;
+  margin:10px 0px;
   background-color:#fff;
 }
 
 .barContent {
   margin-left: auto;
   margin-right: auto;
-  width: 80%;
+  width: 85%;
 }
 
 .rightContent {
@@ -204,7 +205,7 @@ export default {
 }
 
 .logo {
-  margin-top: 20px;
+  /* margin-top: 20px; */
   width: 520px;
   height: 80px;
 }

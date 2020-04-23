@@ -5,7 +5,7 @@
         <div class="header">
           <a href="/">
             <img src="~@/assets/logo.svg" class="logo" alt="logo">
-            <span class="title">学生综合能力测评系统</span>
+            <span class="title">创新创业孵化平台</span>
           </a>
         </div>
         <div class="desc">
@@ -18,7 +18,7 @@
       <div class="footer">
         <div class="links">
           <a href="http://www.zztrc.edu.cn/">郑州旅游职业学院</a>
-          <a href="/">学生综合能力测评系统</a>
+          <a href="/">创新创业孵化平台</a>
         </div>
         <div class="copyright">
           Copyright &copy; 2019 郑州旅游职业学院

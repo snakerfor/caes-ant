@@ -5,7 +5,7 @@
         href="http://www.zztrc.edu.cn/"
         target="_blank"
       >郑州旅游职业学院</a>
-      <a href="/">学生能力测评系统</a>
+      <a href="/">创新创业孵化平台</a>
       <a href="https://gitee.com/zhangmrit/ruoyi-cloud">RuoYi Cloud</a>
     </div>
     <div class="copyright">

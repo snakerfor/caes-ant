@@ -18,7 +18,7 @@ export default {
   props: {
     title: {
       type: String,
-      default: '学生能力测评系统',
+      default: '创新创业孵化平台',
       required: false
     },
     showTitle: {

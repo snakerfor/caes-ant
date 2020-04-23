@@ -21,7 +21,7 @@
       <a-row :gutter="24">
         <a-col :xl="16" :lg="24" :md="24" :sm="24" :xs="24">
           <a-card :bordered="false" title="系统使用说明">
-            <b>学生能力测评系统使用方式：</b><br>
+            <b>创新创业孵化平台使用方式：</b><br>
 
           </a-card>
 
