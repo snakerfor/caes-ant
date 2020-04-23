@@ -6,21 +6,40 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
+const assetsCDN = {
+  // main.js里引入了对应的less以使 webpack-theme-color-replacer工作
+  // https://cdn.jsdelivr.net/npm/ant-design-vue@1.3.9/dist/antd.min.css
+  css: [],
+  js: [
+    'https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js',
+    'https://cdn.jsdelivr.net/npm/axios@0.19.0/dist/axios.min.js',
+    'https://cdn.jsdelivr.net/npm/vue-router@3.1.2/dist/vue-router.min.js',
+    'https://cdn.jsdelivr.net/npm/vuex@3.1.1/dist/vuex.min.js',
+    'https://cdn.jsdelivr.net/npm/moment@2.24.0/moment.min.js',
+    'https://cdn.jsdelivr.net/npm/moment@2.24.0/locale/zh-cn.js',
+    'https://cdn.jsdelivr.net/npm/@antv/g2@3.5.7/dist/g2.min.js',
+    'https://cdn.jsdelivr.net/npm/@antv/data-set@0.10.2/dist/data-set.min.js',
+    'https://cdn.jsdelivr.net/npm/ant-design-vue@1.5.0-rc.4/dist/antd-with-locales.js'
+  ]
+}
+// webpack build externals
+const prodExternals = {
+  // key表示包名(import foo from 'xx' 里的xx)
+  // value表示window下的全局变量名(库暴露出来的namespace,可查lib对应的webpack配置里的library字段)
+  'vue': 'Vue',
+  'axios': 'axios',
+  'vue-router': 'VueRouter',
+  'vuex': 'Vuex',
+  'moment': 'moment',
+  '@antv/g2': 'G2',
+  '@antv/data-set': 'DataSet',
+  'ant-design-vue': 'antd'
+}
+
 // vue.config.js
 const vueConfig = {
   configureWebpack: {
-    externals: {
-      // key表示包名(import foo from 'xx' 里的xx)
-      // value表示window下的全局变量名(库暴露出来的namespace,可查lib对应的webpack配置里的library字段)
-      'vue': 'Vue',
-      'axios': 'axios',
-      'vue-router': 'VueRouter',
-      'vuex': 'Vuex',
-      'moment': 'moment',
-      '@antv/g2': 'G2',
-      '@antv/data-set': 'DataSet',
-      'ant-design-vue': 'antd'
-    },
+    externals: prodExternals,
     plugins: [
       // Ignore all locale files of moment.js
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
@@ -46,19 +65,11 @@ const vueConfig = {
       .options({
         name: 'assets/[name].[hash:8].[ext]'
       })
-    /* svgRule.oneOf('inline')
-      .resourceQuery(/inline/)
-      .use('vue-svg-loader')
-      .loader('vue-svg-loader')
-      .end()
-      .end()
-      .oneOf('external')
-      .use('file-loader')
-      .loader('file-loader')
-      .options({
-        name: 'assets/[name].[hash:8].[ext]'
-      })
-    */
+    // assets require on cdn
+    config.plugin('html').tap(args => {
+      args[0].cdn = assetsCDN
+      return args
+    })
   },
 
   css: {
@@ -82,7 +93,7 @@ const vueConfig = {
           // 主题2 郑旅蓝色
           'layout-header-background': '#01478c', // 导航栏背景色
           'menu-dark-submenu-bg': '#084c8d', // 导航栏子菜单背景色
-          'border-radius-base': '2.5px', // 组件/浮层圆角
+          'border-radius-base': '2px', // 组件/浮层圆角
           'primary-color': '#03a9f4', // 全局主色
           'link-color': '#03a9f4', // 链接色
 
@@ -107,8 +118,6 @@ const vueConfig = {
     port: 8000,
     proxy: {
       '/api': {
-        // target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro',
-        // target: 'https://www.easy-mock.com/mock/5ce2743c2dda2d3b1365fb1b/ruoyi-cloud',
         target: 'http://gateway.com:9527',
         pathRewrite: { '^/api': '' },
         ws: false,
@@ -125,7 +134,7 @@ const vueConfig = {
 }
 
 // 如果你不想在生产环境开启换肤功能，请打开下面注释
-// if (process.env.NODE_ENV !== 'production' || process.env.VUE_APP_PREVIEW === 'true') {
+// if (process.env.VUE_APP_PREVIEW === 'true') {
 // add `ThemeColorReplacer` plugin to webpack plugins
 vueConfig.configureWebpack.plugins.push(createThemeColorReplacerPlugin())
 // }

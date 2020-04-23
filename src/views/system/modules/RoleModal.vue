@@ -80,8 +80,8 @@
         > -->
         <a-tree
           checkable
-          checkStrictly
           v-model="checkedKeys"
+          @check="onCheck"
           :treeData="permissions"
         >
         </a-tree>
@@ -113,8 +113,10 @@ export default {
 
       form: this.$form.createForm(this),
       permissions: [],
-      autoExpandParent: true,
-      checkedKeys: []
+      treeCheck: false,
+      pidSet: [],
+      checkedKeys: [],
+      halfCheckedKeys: []
     }
   },
   created () {
@@ -123,11 +125,22 @@ export default {
   methods: {
     add () {
       this.form.resetFields()
+      this.checkedKeys = []
+      this.pidSet = []
       this.edit({ })
     },
     edit (record) {
-      getRolePermIds(record.roleId).then(res => { this.checkedKeys = res || [] })
+      if (record.roleId) {
+        getRolePermIds(record.roleId).then(res => {
+          const pidSet = new Set(res.map(m => m.parentId).filter(id => id > 0))
+          this.pidSet = pidSet
+          // 因为antd 树插件勾选父节点会导致所有子节点选中,所以过滤所有父节点
+          this.checkedKeys = res.map(m => m.menuId).filter(id => !pidSet.has(id))
+        })
+      }
       this.mdl = Object.assign({}, record)
+      // 如果没有check过，半选节点是拿不到的，只能通过预先设置的pidSet获取
+      this.treeCheck = false
       this.visible = true
       this.$nextTick(() => {
         this.form.setFieldsValue(pick(this.mdl, 'roleId', 'roleName', 'status', 'roleSort', 'roleKey'))
@@ -144,8 +157,10 @@ export default {
       this.autoExpandParent = false
     },
     onCheck (checkedKeys, info) {
+      if (!this.treeCheck) this.treeCheck = true
       console.log('onCheck', info)
       this.checkedKeys = checkedKeys
+      this.halfCheckedKeys = info.halfCheckedKeys
     },
     onSelect (selectedKeys, info) {
       console.log('onSelect', info)
@@ -154,15 +169,13 @@ export default {
     loadPermissions () {
       getPermissions().then(res => {
         this.buildtree(res.rows, this.permissions, 0)
-        console.log(this.permissions)
       })
     },
     buildtree (list, permissions, parentId) {
       list.forEach(item => {
         if (item.parentId === parentId) {
           var child = {
-            key: item.menuId + '',
-            value: item.menuId + '',
+            key: item.menuId,
             title: item.menuName,
             children: []
           }
@@ -173,18 +186,19 @@ export default {
     },
     handleOk (e) {
       const _this = this
-      // 触发表单验证
-      if (this.checkedKeys.length === 0) {
+      // 如果没有check过，半选节点是拿不到的，只能通过预先设置的pidSet获取
+      const checkedAll = this.treeCheck ? _this.checkedKeys.concat(_this.halfCheckedKeys) : _this.checkedKeys.concat(Array.from(_this.pidSet))
+      if (!checkedAll.length > 0) {
         _this.$message.warning('请至少选择一个权限')
         return
       }
+      // 触发表单验证
       this.form.validateFields((err, values) => {
         // 验证表单没错误
         if (!err) {
-          values.menuIds = _this.checkedKeys.checked
+          values.menuIds = checkedAll
           _this.confirmLoading = true
           saveRole(Object.assign(values)).then(res => {
-            console.log(res)
             if (res.code === 0) {
               _this.$message.success('保存成功')
               _this.$emit('ok')

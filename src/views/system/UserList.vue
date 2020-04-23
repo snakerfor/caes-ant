@@ -2,11 +2,14 @@
   <a-card :bordered="false">
     <a-row :gutter="8">
       <a-col :span="5">
-        <s-tree
-          :dataSource="deptTree"
-          :openKeys.sync="openKeys"
-          @click="handleClick">
-        </s-tree>
+        <search-tree
+          :treeData="deptTree"
+          :dataList="dataList"
+          :expandedKeys="expandedKeys"
+          :holderText="holderText"
+          @select="handleSelect"
+        >
+        </search-tree>
       </a-col>
       <a-col :span="19">
         <div class="table-page-search-wrapper">
@@ -77,17 +80,16 @@
 </template>
 
 <script>
-import STree from '@/components/Tree/Tree'
-import { STable } from '@/components'
-import { getUserList, getDeptList, delUser, changUserStatus } from '@/api/system'
+import { STable, SearchTree } from '@/components'
+import { getUserList, getDeptListEnable, delUser, changUserStatus } from '@/api/system'
 import UserModal from './modules/UserModal'
 import UserPwdModal from './modules/UserPwdModal'
 import pick from 'lodash.pick'
 import { checkPermission } from '@/utils/permissions'
 export default {
-  name: 'TableList',
+  name: 'UserList',
   components: {
-    STree,
+    SearchTree,
     STable,
     UserModal,
     UserPwdModal
@@ -138,13 +140,11 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         return getUserList(Object.assign(parameter, this.queryParam))
-          .then(res => {
-            console.log('getUserList', res)
-            return res
-          })
       },
-      openKeys: ['100'],
       deptTree: [],
+      expandedKeys: [],
+      dataList: [],
+      holderText: '搜索部门',
       selectedRowKeys: [],
       selectedRows: [],
       addEnable: checkPermission('system:user:add'),
@@ -154,8 +154,13 @@ export default {
     }
   },
   created () {
-    getDeptList().then(res => {
-      this.buildtree(res.rows, this.deptTree, 0)
+    getDeptListEnable().then(res => {
+      const data = res.rows
+      this.buildtree(data, this.deptTree, 0)
+      this.expandedKeys = data.map(m => m.parentId)
+      this.dataList = data.map(m => {
+        return { key: m.deptId, title: m.deptName }
+      })
     })
   },
   methods: {
@@ -205,9 +210,10 @@ export default {
       list.forEach(item => {
         if (item.parentId === parentId) {
           var child = {
-            key: item.deptId + '',
-            value: item.deptId + '',
+            key: item.deptId,
+            value: item.deptId, // value是给modal的select用的，2者属性不一样
             title: item.deptName,
+            scopedSlots: { title: 'title' },
             children: []
           }
           this.buildtree(list, child.children, item.deptId)
@@ -216,9 +222,10 @@ export default {
         }
       })
     },
-    handleClick (e) {
+    // 下面是树相关方法
+    handleSelect (selectedKeys, info) {
       this.queryParam = {
-        deptId: e.key
+        deptId: selectedKeys[0]
       }
       this.$refs.table.refresh(true)
     }

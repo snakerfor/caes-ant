@@ -22,6 +22,13 @@ export function getUserList (parameter) {
     params: parameter
   })
 }
+
+export function getUser (userId) {
+  return axios({
+    url: api.user + '/get/' + `${userId}`,
+    method: 'get'
+  })
+}
 export function saveUser (parameter) {
   return axios({
     url: api.user + (parameter.userId > 0 ? '/update' : '/save'),
@@ -157,6 +164,13 @@ export function delPerm (deptId) {
 export function getDeptList (parameter) {
   return axios({
     url: api.dept + '/list',
+    method: 'get',
+    params: parameter
+  })
+}
+export function getDeptListEnable (parameter) {
+  return axios({
+    url: api.dept + '/list/enable',
     method: 'get',
     params: parameter
   })

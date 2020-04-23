@@ -1,5 +1,6 @@
 // ie polyfill
-import '@babel/polyfill'
+import 'core-js/stable'
+import 'regenerator-runtime/runtime'
 
 import Vue from 'vue'
 import App from './App.vue'
@@ -16,11 +17,14 @@ import './permission' // permission control
 import './utils/filter' // global filter
 import 'ant-design-vue/dist/antd.less'
 import i18n from './locales'
+import './components/global.less'
+import { Dialog } from '@/components'
 
 Vue.config.productionTip = false
 
 // mount axios Vue.$http and this.$http
 Vue.use(VueAxios)
+Vue.use(Dialog)
 
 new Vue({
   router,

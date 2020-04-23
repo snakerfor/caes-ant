@@ -102,8 +102,12 @@ export default {
           dataIndex: 'menuName'
         },
         {
-          title: '动态菜单唯一键',
+          title: '路由唯一键',
           dataIndex: 'menuKey'
+        },
+        {
+          title: '组件',
+          dataIndex: 'component'
         },
         {
           title: '排序',
@@ -113,6 +117,14 @@ export default {
           title: '按钮类型',
           dataIndex: 'menuType',
           scopedSlots: { customRender: 'menuType' }
+        },
+        {
+          title: '链接',
+          dataIndex: 'path'
+        },
+        {
+          title: '重定向',
+          dataIndex: 'redirect'
         },
         {
           title: '权限标识',

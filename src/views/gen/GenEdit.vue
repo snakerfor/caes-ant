@@ -10,6 +10,7 @@
             :pagination="false"
             :columns="columns"
             :dataSource="data"
+            rowKey="columnId"
           >
             <span slot="serial" slot-scope="text, record, index">
               {{ index + 1 }}
@@ -76,6 +77,7 @@
   </a-card>
 </template>
 <script>
+import { mapState } from 'vuex'
 import BasicInfoForm from './modules/BasicInfoForm.vue'
 import GenInfoForm from './modules/GenInfoForm.vue'
 import { editGen, editSaveGen } from '@/api/gen'
@@ -174,19 +176,35 @@ export default {
       data: [],
       info: {},
       errors: [],
-      loading: false
+      loading: false,
+      firstActed: true
     }
   },
-  beforeCreate () {
-    const { tableId } = this.$route.query
-    if (tableId) {
-      editGen({ tableId: tableId }).then(res => {
-        this.data = res.rows
-        this.info = res.data
-      })
+  created () {
+    this.handleInit()
+  },
+  activated () {
+    if (this.firstActed) {
+      this.firstActed = false
+    } else {
+      this.handleInit()
     }
+  },
+  computed: {
+    ...mapState({
+      multiTab: state => state.app.multiTab
+    })
   },
   methods: {
+    handleInit () {
+      const { tableId } = this.$route.query
+      if (tableId) {
+        editGen({ tableId: tableId }).then(res => {
+          this.data = res.rows
+          this.info = res.data
+        })
+      }
+    },
     handleChange (value, key, column) {
       console.log(value, key, column)
       const newData = [...this.data]
@@ -244,6 +262,7 @@ export default {
         })
         this.info = Object.assign({}, genTable)
         genTable.columns = this.data
+        genTable.params = { treeCode: genTable.treeCode, treeName: genTable.treeName, treeParentCode: genTable.treeParentCode }
         this.loading = true
         editSaveGen(genTable).then(res => {
           if (res.code === 0) {
@@ -278,7 +297,10 @@ export default {
       this.$message.error(this.errors[0].message || '配置错误')
     },
     rollback () {
-      this.$router.push('/tool/genList')
+      if (this.multiTab) {
+        this.$multiTab.closeCurrentPage()
+      }
+      this.$router.push('/tool/gen')
     }
   }
 }

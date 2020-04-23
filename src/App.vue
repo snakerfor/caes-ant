@@ -1,16 +1,16 @@
 <template>
-  <a-locale-provider :locale="locale">
+  <a-config-provider :locale="locale">
     <div id="app">
       <router-view/>
     </div>
-  </a-locale-provider>
+  </a-config-provider>
 </template>
 
 <script>
 // import zhCN from 'ant-design-vue/lib/locale-provider/zh_CN'
-import { locales } from 'ant-design-vue'
 import { AppDeviceEnquire } from '@/utils/mixin'
-
+// 引用cdn还可以这么写
+import { locales } from 'ant-design-vue'
 const zhCN = locales.zh_CN
 
 export default {
@@ -25,8 +25,3 @@ export default {
   }
 }
 </script>
-<style>
-  #app {
-    height: 100%;
-  }
-</style>
