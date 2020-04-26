@@ -1,5 +1,5 @@
 <template>
-  <div id="homeLayout">
+  <div id="homeLayout" style="max-width:1200px;margin:auto">
     <div class="smallBar">欢迎进入郑州旅游职业学院创新创业服务网</div>
     <div class="titleBar">
       <div class="barContent">
@@ -250,7 +250,6 @@ export default {
 
 .contentWrap {
   margin: 20px auto 20px auto;
-  width: 85%;
 }
 
 .listTitle1 {
