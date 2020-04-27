@@ -366,10 +366,21 @@ export function deleteFile (parameter) {
 }
 
 // 文件上传
-export function uploadFile (parameter) {
+export function uploadFile (parameter, progressCallback) {
+  var formData = new FormData()
+  formData.append('file', parameter)
+
   return axios({
     url: api.file + '/upload',
     method: 'post',
-    data: parameter
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    // 进度回调
+    onUploadProgress: (progressEvent) => {
+      const complete = (progressEvent.loaded / progressEvent.total) * 100
+      progressCallback(complete)
+    }
   })
 }
