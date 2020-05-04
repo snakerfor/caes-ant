@@ -9,11 +9,8 @@ const downloadUrl = [
 const mimeMap = {
   xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   zip: 'application/zip',
-<<<<<<< HEAD
-  xml: 'application/xml'
-=======
+  // xml: 'application/xml'
   octetStream: 'application/octet-stream'
->>>>>>> 6e6e46d2dd3419e40663e5dfd8e0bf52a2b2e5cd
 }
 
 export function exportExcel (url, params) {

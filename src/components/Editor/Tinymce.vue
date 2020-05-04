@@ -11,6 +11,8 @@
 
 <script>
 import tinymce from 'tinymce/tinymce'
+import Editor from '@tinymce/tinymce-vue'
+import 'tinymce/themes/silver'
 // 更多插件参考：https://www.tiny.cloud/docs/plugins/
 import 'tinymce/plugins/image'
 import 'tinymce/plugins/media'
