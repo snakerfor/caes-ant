@@ -46,6 +46,7 @@ const constantRouterComponents = {
   mifei: () => import('@/views/others/MiFei'),
   gnqc: () => import('@/views/others/Gnqc'),
   // system
+<<<<<<< HEAD
   // userList: () => import('@/views/system/UserList'),
   // roleList: () => import('@/views/system/RoleList'),
   // permissionList: () => import('@/views/system/PermissionList'),
@@ -54,6 +55,17 @@ const constantRouterComponents = {
   // distList: () => import('@/views/system/DistList'),
   // configList: () => import('@/views/system/ConfigList'),
   // ossList: () => import('@/views/system/OssList'),
+=======
+  userList: () => import('@/views/system/UserList'),
+  roleList: () => import('@/views/system/RoleList'),
+  permissionList: () => import('@/views/system/PermissionList'),
+  deptList: () => import('@/views/system/DeptList'),
+  dictList: () => import('@/views/system/DictList'),
+  distList: () => import('@/views/system/DistList'),
+  configList: () => import('@/views/system/ConfigList'),
+  ossList: () => import('@/views/system/OssList'),
+  fileList: () => import('@/views/system/FileList'),
+>>>>>>> 6e6e46d2dd3419e40663e5dfd8e0bf52a2b2e5cd
   // monitor
   // operLogList: () => import('@/views/monitor/OperLogList'),
   // loginLogList: () => import('@/views/monitor/LoginLogList'),
@@ -65,7 +77,8 @@ const constantRouterComponents = {
   abilityTest: () => import('@/views/ability/abilityTest'),
   // competition
   apply: () => import('@/views/competition/Apply'),
-  teacherReview: () => import('@/views/competition/TeacherReview')
+  teacherReview: () => import('@/views/competition/TeacherReview'),
+  essayEditor: () => import('@/views/competition/EssayEditor')
   // ...more
 }
 

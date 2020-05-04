@@ -11,18 +11,24 @@
 
 <script>
 import tinymce from 'tinymce/tinymce'
-import Editor from '@tinymce/tinymce-vue'
-import 'tinymce/themes/silver'
 // 更多插件参考：https://www.tiny.cloud/docs/plugins/
-import 'tinymce/plugins/lists'
 import 'tinymce/plugins/image'
 import 'tinymce/plugins/media'
 import 'tinymce/plugins/table'
+import 'tinymce/plugins/lists'
+import 'tinymce/plugins/contextmenu'
 import 'tinymce/plugins/wordcount'
-import 'tinymce/plugins/code'
 import 'tinymce/plugins/paste'
 import 'tinymce/plugins/hr'
 import 'tinymce/plugins/emoticons'
+import 'tinymce/plugins/colorpicker'
+import 'tinymce/plugins/code'
+import 'tinymce/plugins/textcolor'
+import 'tinymce/plugins/imagetools'
+import 'tinymce/plugins/link'
+import 'tinymce/plugins/fullscreen'
+import 'tinymce/plugins/template'
+import './plugins/upload'
 
 export default {
   name: 'Tinymce',
@@ -46,11 +52,11 @@ export default {
     },
     plugins: {
       type: [String, Array],
-      default: 'lists image media table wordcount code paste hr emoticons'
+      default: 'lists image media table wordcount code paste hr emoticons imagetools link fullscreen template uploader'
     },
     toolbar: {
       type: [String, Array],
-      default: 'undo redo | forecolor backcolor  | bold italic | alignleft aligncenter alignright alignjustify  | bullist numlist outdent indent hr | lists image media table code emoticons paste| removeformat'
+      default: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent hr | lists image media table code emoticons paste| removeformat code template link | file fullscreen'
     }
   },
   data () {
@@ -72,7 +78,9 @@ export default {
         images_upload_handler: (blobInfo, success, failure) => {
           const img = 'data:image/jpeg;base64,' + blobInfo.base64()
           success(img)
-        }
+        },
+        // a标签属性白名单 用于添加附件插件中的附件下载链接
+        extended_valid_elements: 'a[href|onclick]'
       },
       myValue: this.value
     }

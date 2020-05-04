@@ -18,7 +18,7 @@
           给editor加key是因为给tinymce keep-alive以后组件切换时tinymce编辑器会显示异常，
           在activated钩子里改变key的值可以让编辑器重新创建
         -->
-        <tinymce :key="tinymceFlag"></tinymce>
+        <tinymce :key="tinymceFlag" v-model="tinyValue" @input="showNewValue" @onClick="ala"></tinymce>
       </a-form-item>
     </a-form>
   </a-card>
@@ -37,7 +37,16 @@ export default {
     return {
       description: '富文本编辑器演示，QuillEditor不能图片缩放，如果对图片没什么操作的用户，推荐使用,上传为公共API，比较慢',
       value: 1,
-      tinymceFlag: 1
+      tinymceFlag: 1,
+      tinyValue: 'ddd'
+    }
+  },
+  methods: {
+    showNewValue (e) {
+      console.info(e)
+    },
+    ala (e, tiny) {
+      console.info(e)
     }
   },
   activated () {

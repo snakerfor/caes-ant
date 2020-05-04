@@ -1,11 +1,19 @@
 import { pureAxios, axios } from '@/utils/request'
+import { notification } from 'ant-design-vue'
 
-const downloadUrl = '/system/common/download'
+const downloadUrl = [
+  '/system/common/download',
+  '/system/file'
+]
 
 const mimeMap = {
   xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   zip: 'application/zip',
+<<<<<<< HEAD
   xml: 'application/xml'
+=======
+  octetStream: 'application/octet-stream'
+>>>>>>> 6e6e46d2dd3419e40663e5dfd8e0bf52a2b2e5cd
 }
 
 export function exportExcel (url, params) {
@@ -26,7 +34,7 @@ export function exportExcel (url, params) {
  */
 export function downloadXlsx (filename) {
   pureAxios({
-    url: downloadUrl,
+    url: downloadUrl[0],
     method: 'get',
     params: { fileName: filename, delete: true },
     responseType: 'blob'
@@ -65,9 +73,52 @@ export function resolveBlob (res, mimeType) {
   var result = patt.exec(contentDisposition)
   var fileName = result[1]
   aLink.href = URL.createObjectURL(blob)
-  aLink.setAttribute('download', fileName) // 设置下载文件名称
+  // 文件名过滤掉双引号并设置下载文件名
+  aLink.setAttribute('download', fileName.replace(/"/g, '')) // 设置下载文件名称
   document.body.appendChild(aLink)
   aLink.click()
   document.body.removeChild(aLink)
   window.URL.revokeObjectURL(aLink.href)
+}
+
+/**
+ * 私有函数 解析blob响应内容为Json
+ * @param {*} blob blob响应内容
+ * @returns {*} promise对象
+ */
+function blob2Json (blob) {
+  var promise = new Promise(function (resolve, reject) {
+    var reader = new FileReader()
+    reader.onload = (e) => resolve(JSON.parse(e.target.result))
+    reader.readAsText(blob)
+  })
+  return promise
+}
+
+/**
+ * 通用文件下载
+ * @param {*} fileId 文件id
+ */
+export function downloadFile (fileId) {
+  var parameter = {
+    fileId: fileId
+  }
+  return pureAxios({
+    url: downloadUrl[1] + '/download',
+    method: 'get',
+    params: parameter,
+    responseType: 'blob'
+  }).then(res => {
+    if (res.data.type === 'application/json') {
+      blob2Json(res.data).then(function (value) {
+        notification.error({
+          message: `下载出错：${value.code} `,
+          description: value.msg
+        })
+      })
+    } else {
+      // blob下载
+      resolveBlob(res, mimeMap.octetStream)
+    }
+  })
 }
