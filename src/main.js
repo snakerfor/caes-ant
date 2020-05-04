@@ -7,8 +7,8 @@ import router from './router'
 import store from './store/'
 import { VueAxios } from './utils/request'
 
-// mock
-import './mock'
+// mock(由于mock钩子会拦截axios.onUploadProgress事件导致上传文件功能失效 暂时禁用mockjs)
+// import './mock'
 
 import bootstrap from './core/bootstrap'
 import './core/lazy_use'

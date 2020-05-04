@@ -1,15 +1,25 @@
 <template>
   <div>
     <a-collapse defaultActiveKey="1" :bordered="false" style="position:relative">
-      <div style="position:absolute;right:30px;top:8px;z-index:9999;">
-        <a-upload
-          name="file"
-          :multiple="true"
-          :withCredentials="true"
-          :headers="uploadHeaders"
-          :action="uploadUrl">
-          <a-button type="primary"> <a-icon type="upload" /> 批量上传 </a-button>
-        </a-upload>
+      <div style="position:absolute;right:30px;top:8px;z-index:50;">
+        <a-button type="primary" @click="uploadModalvisible=true"> <a-icon type="upload" /> 批量上传 </a-button>
+
+        <a-modal title="批量上传（仅支持上传媒体，文档或压缩包）" v-model="uploadModalvisible" footer="">
+          <a-upload-dragger
+            :multiple="true"
+            :withCredentials="true"
+            :customRequest="uploadRequest"
+            @change="uploadChange">
+            <p class="ant-upload-drag-icon">
+              <a-icon type="inbox" />
+            </p>
+            <p class="ant-upload-text">点击或拖曳文件到这个区域进行上传</p>
+            <p class="ant-upload-hint">
+              Support for a single or bulk upload. Strictly prohibit from uploading company data or other
+              band files
+            </p>
+          </a-upload-dragger>
+        </a-modal>
       </div>
       <a-collapse-panel header="模糊文件搜索">
         <!-- 文件名及上传时间搜索 -->
@@ -51,6 +61,9 @@
           <a @click="clickDownload(data.fileId)">下载</a>
         </span>
 
+        <!-- 解决文件名溢出问题 原因:长文本下会撑大column.width导致属性失效 -->
+        <span slot="fileName" slot-scope="data" class="longTextWrap">{{ data.fileName }}</span>
+
         <span slot="fileAuth" slot-scope="data">
           {{ (data.fileAuth) === '0' ? '禁止访问' : (data.fileAuth) === '1' ? '内部文件' : (data.fileAuth) === '2' ? '公开文件' : '未知' }}
         </span>
@@ -78,20 +91,14 @@
 
 <script>
 // 导入接口函数 uploadFile
-import { getFileList, deleteFile, updateFileInfo } from '@/api/system'
+import { getFileList, deleteFile, updateFileInfo, uploadFile } from '@/api/system'
 import { downloadFile } from '@/utils/download'
 import moment from 'moment'
-import Vue from 'vue'
-import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 export default {
   data () {
     var pageData = {
-      uploadUrl: 'http://localhost:8000/api/system/file/upload',
-      // 上传header 附加token
-      uploadHeaders: {
-        token: Vue.ls.get(ACCESS_TOKEN)
-      },
+      uploadModalvisible: false,
       listColumns: [
         {
           title: '文件ID',
@@ -99,12 +106,14 @@ export default {
         },
         {
           title: '文件名',
-          dataIndex: 'fileName'
+          scopedSlots: { customRender: 'fileName' },
+          width: '35%',
+          minWidth: '10%'
         },
         {
           title: '文件大小',
           dataIndex: 'fileSize',
-          width: 90
+          width: '6%'
         },
         {
           title: '文件权限',
@@ -114,12 +123,12 @@ export default {
         {
           title: '上传时间',
           dataIndex: 'uploadTime',
-          width: 90
+          width: '10%'
         },
         {
           title: '下载次数',
           dataIndex: 'downloadCount',
-          width: 90
+          width: '6%'
         },
         {
           title: '操作',
@@ -243,6 +252,40 @@ export default {
     },
     clickDownload (fileId) {
       downloadFile(fileId)
+    },
+    // 默认流程无法正确处理文件上传状态 使用自定义上传流程
+    uploadRequest (file) {
+      file.onProgress()
+      uploadFile(file.file, (complete) => {
+        // 实时上传进度
+        file.onProgress({ percent: complete })
+      }).then(res => {
+        // 上传成功
+        if (res.code === 0) {
+          file.onSuccess(res.fileInfo.saveStatus, file)
+          this.$notification.success({
+            message: '文件上传成功',
+            description: `${file.file.name} （${res.fileInfo.fileSize}）上传成功`
+          })
+        } else {
+          file.onError(null, res.fileInfo.saveStatus, file)
+          this.$notification.error({
+            message: '文件上传失败',
+            description: `${file.file.name} 上传失败：${res.fileInfo.saveStatus}`
+          })
+        }
+      }).catch(() => {
+        file.onError(null, '与服务器断开连接', file)
+        this.$message.error('系统错误，请稍后再试')
+      })
+    },
+    // 文件上传状态
+    uploadChange (info) {
+      if (info.file.status === 'done') {
+        info.file.name = info.file.name + '（' + info.file.response.fileSize + '）'
+      } else if (info.file.status === 'error') {
+
+      }
     }
   },
   created: function () {
@@ -254,5 +297,14 @@ export default {
 <style>
 .inputWrap {
   min-width: 298px;
+}
+
+.longTextWrap {
+  min-width: 130px;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  word-wrap: break-word;
+  word-break: break-all;
 }
 </style>

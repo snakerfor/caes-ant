@@ -1,4 +1,5 @@
 import { pureAxios, axios } from '@/utils/request'
+import { notification } from 'ant-design-vue'
 
 const downloadUrl = [
   '/system/common/download',
@@ -74,7 +75,24 @@ export function resolveBlob (res, mimeType) {
   document.body.appendChild(aLink)
 }
 
-// 上传文件下载
+/**
+ * 私有函数 解析blob响应内容为Json
+ * @param {*} blob blob响应内容
+ * @returns {*} promise对象
+ */
+function blob2Json (blob) {
+  var promise = new Promise(function (resolve, reject) {
+    var reader = new FileReader()
+    reader.onload = (e) => resolve(JSON.parse(e.target.result))
+    reader.readAsText(blob)
+  })
+  return promise
+}
+
+/**
+ * 通用文件下载
+ * @param {*} fileId 文件id
+ */
 export function downloadFile (fileId) {
   var parameter = {
     fileId: fileId
@@ -85,7 +103,16 @@ export function downloadFile (fileId) {
     params: parameter,
     responseType: 'blob'
   }).then(res => {
-    // blob下载
-    resolveBlob(res, mimeMap.octetStream)
+    if (res.data.type === 'application/json') {
+      blob2Json(res.data).then(function (value) {
+        notification.error({
+          message: `下载出错：${value.code} `,
+          description: value.msg
+        })
+      })
+    } else {
+      // blob下载
+      resolveBlob(res, mimeMap.octetStream)
+    }
   })
 }

@@ -1,16 +1,13 @@
 <template>
-  <div class="tinymce-editor">
-    <Editor
-      v-model="myValue"
-      :init="init"
-      :disabled="disabled"
-      @onClick="onClick">
-    </Editor>
-  </div>
+  <Editor
+    v-model="myValue"
+    :init="init"
+    :disabled="disabled">
+  </Editor>
 </template>
 
 <script>
-import tinymce from 'tinymce/tinymce'
+import 'tinymce/tinymce'
 import Editor from '@tinymce/tinymce-vue'
 import 'tinymce/themes/silver'
 // 更多插件参考：https://www.tiny.cloud/docs/plugins/
@@ -31,6 +28,7 @@ import 'tinymce/plugins/imagetools'
 import 'tinymce/plugins/link'
 import 'tinymce/plugins/fullscreen'
 import 'tinymce/plugins/template'
+import './plugins/upload'
 
 export default {
   name: 'Tinymce',
@@ -49,11 +47,11 @@ export default {
     },
     plugins: {
       type: [String, Array],
-      default: 'lists image media table textcolor wordcount contextmenu code paste hr emoticons imagetools link fullscreen template'
+      default: 'lists image media table wordcount code paste hr emoticons imagetools link fullscreen template uploader'
     },
     toolbar: {
       type: [String, Array],
-      default: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify  | bullist numlist outdent indent hr | lists image media table code emoticons paste| removeformat code template link | file fullscreen'
+      default: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent hr | lists image media table code emoticons paste| removeformat code template link | file fullscreen'
     }
   },
   data () {
@@ -66,7 +64,7 @@ export default {
         height: 300, // 编辑器高度
         plugins: this.plugins,
         toolbar: this.toolbar,
-        branding: false, // 是否禁用“Powered by TinyMCE”
+        branding: false, // 编辑器上显示tinemce的名称
         menubar: true, // 顶部菜单栏显示
         emoticons_database_url: 'https://cdn.jsdelivr.net/npm/tinymce@5.2.0/plugins/emoticons/js/emojis.js',
         // 此处为图片上传处理函数，这个直接用了base64的图片形式上传图片，
@@ -75,32 +73,16 @@ export default {
           const img = 'data:image/jpeg;base64,' + blobInfo.base64()
           success(img)
         },
-        // 添加附件按钮
-        setup: function (editor) {
-          editor.ui.registry.addButton('file', {
-            text: '添加附件',
-            onAction: function (_) {
-              editor.insertContent('<div style="height:40px;position:fixed;border-radius:10px;padding:10px;line-height:20px;border:1px dashed grey;background-color:#cccccc;font-size:13px;width:160px"><div style="width:20%;position:absolute;left:0;font-size:40px;padding-top:8px;">🖇</div><div style="width:80%;position:absolute;right:0"><div style="display:block;">文件名......</div><div style="display:block;">文件大小：1M</div></div></div>')
-            }
-          })
-        }
+        // a标签属性白名单 用于添加附件插件中的附件下载链接
+        extended_valid_elements: 'a[href|onclick]'
       },
       myValue: this.value
     }
   },
-  mounted () {
-    tinymce.init({})
-  },
   methods: {
     // 添加相关的事件，可用的事件参照文档=> https://github.com/tinymce/tinymce-vue => All available events
     // 需要什么事件可以自己增加
-    onClick (e) {
-      this.$emit('onClick', e, tinymce)
-    },
     // 可以添加一些自己的自定义事件，如清空内容
-    clear () {
-      this.myValue = ''
-    }
   },
   watch: {
     value (newValue) {
