@@ -67,7 +67,9 @@ const constantRouterComponents = {
   // competition
   apply: () => import('@/views/competition/Apply'),
   teacherReview: () => import('@/views/competition/TeacherReview'),
-  essayEditor: () => import('@/views/competition/EssayEditor')
+  essayEditor: () => import('@/views/competition/EssayEditor'),
+  essayPublishList: () => import('@/views/competition/EssayPublishList'),
+  essay: () => import('@/views/home/modules/Essay')// 测试
   // ...more
 }
 

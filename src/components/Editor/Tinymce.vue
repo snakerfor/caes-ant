@@ -1,10 +1,11 @@
 <template>
   <div class="tinymce-editor">
     <Editor
-      v-model="myValue"
+      v-model="value"
       :init="init"
       :disabled="disabled"
-      @onClick="onClick">
+      @onClick="onClick"
+      @onChange="onChange">
     </Editor>
   </div>
 </template>
@@ -36,6 +37,10 @@ export default {
   name: 'Tinymce',
   components: {
     Editor
+  },
+  model: {
+    // prop: 'value',
+    event: 'change.value'
   },
   props: {
     // 传入一个value，使组件支持v-model绑定
@@ -83,8 +88,7 @@ export default {
         },
         // a标签属性白名单 用于添加附件插件中的附件下载链接
         extended_valid_elements: 'a[href|onclick]'
-      },
-      myValue: this.value
+      }
     }
   },
   mounted () {
@@ -96,17 +100,14 @@ export default {
     onClick (e) {
       this.$emit('onClick', e, tinymce)
     },
-    // 可以添加一些自己的自定义事件，如清空内容
-    clear () {
-      this.myValue = ''
-    }
-  },
-  watch: {
-    value (newValue) {
-      this.myValue = newValue
-    },
-    myValue (newValue) {
-      this.$emit('input', newValue)
+    // 实现数据反向绑定
+    onChange: function (e) {
+      // v-model绑定
+      this.$emit('change.value', this.value)
+      // console.log(this.value)
+      // 触发change事件支持antd的表单绑定
+      this.$emit('change', this.value)
+      // this.$emit('input', this.value)
     }
   }
 }
