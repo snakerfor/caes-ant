@@ -58,7 +58,13 @@
       </a-collapse-panel>
     </a-collapse>
     <a-card :body-style="{padding: '24px 32px'}" :bordered="false">
-      <a-table :columns="listColumns" :dataSource="listData" :loading="listIsLoading" :pagination="false" :scroll="{ x: 1500, y: 300 }">
+      <a-table
+        rowKey="productionId"
+        :columns="listColumns"
+        :dataSource="listData"
+        :loading="listIsLoading"
+        :pagination="false"
+        :scroll="{ x: 1500, y: 300 }">
         <!-- 作品层级列表自定义渲染 -->
         <span slot="prodLevelCustom" slot-scope="prodLevelData, record, index">
           <a-tag @click="showReviewModel(record, index)" :color="prodLevelData === '0' ? 'orange' : (prodLevelData === '1' ? 'geekblue' : (prodLevelData === '2' ? 'green' : 'red'))">

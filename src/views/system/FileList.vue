@@ -50,7 +50,7 @@
     </a-collapse>
 
     <a-card :body-style="{padding: '24px 32px'}" :bordered="false">
-      <a-table :columns="listColumns" :dataSource="listData" :loading="listIsLoading" :pagination="pagination">
+      <a-table rowKey="fileId" :columns="listColumns" :dataSource="listData" :loading="listIsLoading" :pagination="pagination">
         <span slot="control" slot-scope="data">
           <a @click="clickModify(data)">修改</a>
           <a-divider type="vertical" />

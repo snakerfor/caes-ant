@@ -339,7 +339,7 @@ export function saveOssConfig (parameter) {
   })
 }
 
-// 文件上传下载相关功能
+// 文件功能
 
 // 文件列表
 export function getFileList (parameter, pageNumParam, pageSizeParam) {
@@ -356,6 +356,15 @@ export function getFileList (parameter, pageNumParam, pageSizeParam) {
     params: Object.assign(paginationParam, parameter)
   })
 }
+
+// 取得文件信息
+export function getFileInfo (fileId) {
+  return axios({
+    url: api.file + '/get/' + fileId,
+    method: 'get'
+  })
+}
+
 // 修改文件信息
 export function updateFileInfo (parameter) {
   return axios({

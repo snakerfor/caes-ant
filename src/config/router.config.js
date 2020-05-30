@@ -13,7 +13,7 @@ export const defaultRouterMap = [
     'key': 'dashboard',
     'component': 'RouteView',
     'redirect': '/dashboard/weclome',
-    // 'icon': bxAnaalyse,
+    'icon': 'home',
     'children': [{
       'title': '分析页',
       'path': 'analysis/:pageNum([1-9]\\d*)?',
